@@ -1,12 +1,23 @@
 import http.server
 import socketserver
-import socket
 import smashgg
 import random
-
 from urllib.parse import urlparse
-
 from jinja2 import FileSystemLoader, Environment, select_autoescape
+
+entrants = dict()
+
+
+def get_placement_delta(entrant, placement):
+
+    if entrant not in entrants:
+        entrants[entrant] = placement
+
+    last_placement = entrants[entrant]
+    entrants[entrant] = placement
+
+    return last_placement - placement
+
 
 # read HTML template
 
@@ -27,23 +38,34 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             # self.send_header("Content-type", "text/html")
             self.end_headers()
-            res = smashgg.query_standings(515308)
+            res = smashgg.query_standings(517237)
             body = ""
 
             placements = res["data"]["event"]["standings"]["nodes"]
 
             # test for handling changing placements
-            random.shuffle(placements)
+            # random.shuffle(placements)
 
             print(res)
 
+            placement = 1
             for place in placements:
+                entrant = place["entrant"]["name"]
+                # placement = int(place["placement"])
+                delta = get_placement_delta(entrant, placement)
+                css_class = ""
+                if delta > 0:
+                    css_class = "up"
+                elif delta < 0:
+                    css_class = "down"
                 body += f"""
                     <div class="place">
-                        <span class="placement">{place["placement"]}</span>
-                        <span class="name">{place["entrant"]["name"]}</span>
+                        <div class="placement-wrapper"><span class="placement">{placement}</span></div>
+                        <!--span class="delta {css_class}">{delta}</span-->
+                        <span class="name">{entrant}</span>
                     </div>
                 """
+                placement += 1
 
             self.wfile.write(bytes(template.render(body=body), "utf8"))
 

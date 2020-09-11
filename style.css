@@ -14,15 +14,46 @@ body {
 	mix-blend-mode: color-dodge;
 }
 
+.placement-wrapper {
+}
+
+.placement {
+	display: inline-block;
+	position: absolute;
+	margin-top: -10px;
+	width: 50px;
+	height: 50px;
+	border-radius: 25px;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+	background: white;
+	color: black;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 50px;
+	text-shadow: none;
+	font-style: normal;
+	font-size: 18pt;
+}
+
+.name {
+	display: inline-block;
+	height: 40px;
+	margin-left: 70px;
+	vertical-align: center;
+	line-height: 30px;
+}
+
 .place {
 	padding: 6px 0px 6px 30px;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 	border-radius: 4px;
-	width: 300px;
+	width: 350px;
+	height: 30px;
 	background: rgba(255, 255, 255, 0.2);
 	mix-blend-mode: color-dodge;
 	color: white;
 	text-shadow: 2px 2px 8px black;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .countdown-caption {
