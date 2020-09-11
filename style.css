@@ -1,0 +1,52 @@
+
+body {
+	font-family: "Open Sans", sans-serif;
+	font-size: 16pt;
+	font-weight: bold;
+	font-style: italic;
+	letter-spacing: 2px;
+	color: white;
+}
+
+.standings {
+	margin-top: 40px;
+	margin-left: 40px;
+	mix-blend-mode: color-dodge;
+}
+
+.place {
+	padding: 6px 0px 6px 30px;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	width: 300px;
+	background: rgba(255, 255, 255, 0.2);
+	mix-blend-mode: color-dodge;
+	color: white;
+	text-shadow: 2px 2px 8px black;
+}
+
+.countdown-caption {
+	letter-spacing: 4px;
+	margin-bottom: 20px;
+}
+
+.countdown {
+	letter-spacing: 4px;
+	font-size: 72pt;
+	font-style: normal;
+	text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.wrapper {
+	width: 600px;
+	height: 100px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+
+	text-align: center;
+}
+
