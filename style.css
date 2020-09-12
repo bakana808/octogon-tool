@@ -8,9 +8,56 @@ body {
 	color: white;
 }
 
+.round-name, .round-type {
+	width: 100%;
+	height: 15px;
+	text-transform: uppercase;
+	font-size: 10pt;
+	text-align: center;
+	font-weight: bolder;
+}
+
+.match {
+	display: inline-block;
+	background-color: rgba(255, 255, 255, 0.1);
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	margin-bottom: 10px;
+	padding-left: 20px;
+	height: 80px;
+	width: 400px;
+	line-height: 50px;
+}
+
+.vs {
+	display: inline-block;
+	vertical-align: top;
+	width: 10%;
+	height: 100%;
+	line-height: 50px;
+
+	margin-top: 10px;
+
+	text-transform: uppercase;
+	font-size: 8pt;
+	text-align: center;
+	font-weight: bold;
+}
+
+.player {
+	display: inline-block;
+	width: 40%;
+	overflow: hidden;
+
+	margin-top: 10px;
+	/*background-color: rgba(255, 255, 255, 0.1);*/
+
+	text-align: center;
+}
+
 .standings {
-	margin-top: 40px;
-	margin-left: 40px;
+	/*margin-top: 40px;*/
+	/*margin-left: 40px;*/
 	mix-blend-mode: color-dodge;
 }
 
@@ -49,7 +96,7 @@ body {
 	border-radius: 4px;
 	width: 350px;
 	height: 30px;
-	background: rgba(255, 255, 255, 0.2);
+	background: rgba(255, 255, 255, 0.1);
 	mix-blend-mode: color-dodge;
 	color: white;
 	text-shadow: 2px 2px 8px black;

@@ -1,9 +1,7 @@
 import http.server
 import socketserver
 import smashgg
-import random
-from urllib.parse import urlparse
-from jinja2 import FileSystemLoader, Environment, select_autoescape
+from jinja2 import FileSystemLoader, Environment
 
 entrants = dict()
 
@@ -32,6 +30,10 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
 
         print(f"requesting file: {self.path}")
+
+        # ------------------------------------------------------------------------------
+        #  Ladder Standings Overlay
+        # -----------------------------------------------------------------------------
 
         if self.path == "/":
             # serve main HTML
@@ -69,6 +71,10 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
             self.wfile.write(bytes(template.render(body=body), "utf8"))
 
+        # ------------------------------------------------------------------------------
+        #  Countdown Overlay
+        # -----------------------------------------------------------------------------
+
         elif self.path == "/countdown":
 
             self.send_response(200)
@@ -90,7 +96,51 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(
                 bytes(temp_countdown.render(timestamp=timestamp), "utf8"))
 
-        else:
+        # ------------------------------------------------------------------------------
+        #  Bracket Overlay
+        # -----------------------------------------------------------------------------
+
+        elif self.path == "/bracket":
+
+            self.send_response(200)
+            self.end_headers()
+
+            res = smashgg.query("""
+                query BracketQuery($id: ID!) {
+                    event(id: $id) {
+                        sets(page: 1, perPage: 10, sortType: CALL_ORDER) {
+                            nodes {
+                                fullRoundText
+                                setGamesType
+                                totalGames
+                                slots(includeByes: false) {
+                                    entrant {
+                                        id
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            """,
+                                id=517237)
+
+            body = ""
+            for s in res["data"]["event"]["sets"]["nodes"]:
+                body += f"""
+                    <div class="match">
+                        <div class="round-name">{ s["fullRoundText"] } · Best of { s["totalGames"] }</div>
+                        <span class="player">{ s["slots"][0]["entrant"]["name"] }</span>
+                        <span class="vs">vs.</span>
+                        <span class="player">{ s["slots"][1]["entrant"]["name"] }</span>
+                    </div>
+                """
+                print(s)
+
+            self.wfile.write(bytes(template.render(body=body), "utf8"))
+
+        else:  # attempt to serve the requested path as a file
             try:
                 f = open(self.path[1:], "r")
 
