@@ -1,7 +1,6 @@
 import http.server
 import socketserver
 import smashgg
-import pyglet
 from jinja2 import FileSystemLoader, Environment
 
 entrants = dict()
@@ -174,16 +173,19 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 # pyglet.app.run()
 
 
-def start_server(port=8000):
+def start_server(server):
+    print(f"starting server on port { server.server_address[1] }...")
+    server.serve_forever()
+
+
+def create_server(port=8000) -> socketserver.TCPServer:
     """
     Start the server that serves overlays.
     """
-
-    print(f"starting server on port { port }")
     # prevents a "port already binded" error when restarting program
-    socketserver.TCPServer.allow_reuse_address = True
     server = socketserver.TCPServer(("", port), HTTPHandler)
-    server.serve_forever()
+    server.allow_reuse_address = True
+    return server
 
 
 # open("output.html", "w").write(html)

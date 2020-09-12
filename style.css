@@ -1,6 +1,11 @@
 
+html {
+	width: 100%;
+}
+
 body {
-	font-family: "Open Sans", sans-serif;
+	width: 150%;
+	font-family: "Noto Sans", "Open Sans", sans-serif;
 	font-size: 16pt;
 	font-weight: bold;
 	font-style: italic;
@@ -11,10 +16,16 @@ body {
 .round-name, .round-type {
 	width: 100%;
 	height: 15px;
+
+	margin-top: 8px;
+
 	text-transform: uppercase;
-	font-size: 10pt;
 	text-align: center;
+	font-style: normal;
+	font-size: 10pt;
 	font-weight: bolder;
+	letter-spacing: 6px;
+	line-height: 15px;
 }
 
 .match {
@@ -36,7 +47,7 @@ body {
 	height: 100%;
 	line-height: 50px;
 
-	margin-top: 10px;
+	margin-top: 1px;
 
 	text-transform: uppercase;
 	font-size: 8pt;
@@ -47,12 +58,25 @@ body {
 .player {
 	display: inline-block;
 	width: 40%;
-	overflow: hidden;
+	height: 30px;
+	overflow: show;
 
 	margin-top: 10px;
-	/*background-color: rgba(255, 255, 255, 0.1);*/
 
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 15px;
+
+	font-size: 12pt;
+	font-size: 0.5vw;
 	text-align: center;
+	line-height: 30px;
+}
+
+.player.winner {
+	background-color: white;
+	color: rgba(0, 0, 0, 0.8);
+
+	font-weight: bolder;
 }
 
 .standings {
