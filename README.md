@@ -9,6 +9,7 @@ super early stuff
 ## Requirements
 
 - Python 3
+- Requests (`pip install requests`)
 - Jinja2 (`pip install jinja2`)
 
 ## Usage
@@ -19,9 +20,12 @@ serves to port 8000.
 
 start server with `python client.py`
 
-connect to `localhost:8000` for the matchmaking overlay.
+intended for use with the "browser source" source in OBS:
+- connect to `localhost:8000` for a matchmaking overlay.
+- connect to `localhost:8000/countdown` for a countdown overlay.
+- connect to `localhost:8000/bracket` for a bracket overlay.
 
-connect to `localhost:8000/countdown` for the countdown overlay.
+## Customization
 
-stylesheet located in `style.css`.
+stylesheet located in `style.css`. (beware: it is messy)
 
