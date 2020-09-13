@@ -4,6 +4,8 @@ Octogon Panel
 
 super early stuff
 
+![Preview Screenshot](preview.png)
+
 ## Requirements
 
 - Python 3
