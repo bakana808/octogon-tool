@@ -68,6 +68,12 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                 entrant = place["entrant"]["name"]
                 # placement = int(place["placement"])
                 delta = get_placement_delta(entrant, placement)
+
+                # add extra class for top4 placements
+                placement_classes = "placement"
+                if placement <= 4:
+                    placement_classes += " top4"
+
                 css_class = ""
                 if delta > 0:
                     css_class = "up"
@@ -75,7 +81,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                     css_class = "down"
                 body += f"""
                     <div class="place">
-                        <div class="placement-wrapper"><span class="placement">{placement}</span></div>
+                        <div class="placement-wrapper"><span class="{placement_classes}">{placement}</span></div>
                         <!--span class="delta {css_class}">{delta}</span-->
                         <span class="name">{entrant}</span>
                     </div>
@@ -189,6 +195,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
 def start_server(server):
     print(f"starting server on port { server.server_address[1] }...")
+    server.allow_reuse_address = True
     server.serve_forever()
 
 
@@ -197,8 +204,8 @@ def create_server(port=8000) -> socketserver.TCPServer:
     Start the server that serves overlays.
     """
     # prevents a "port already binded" error when restarting program
+    socketserver.TCPServer.allow_reuse_address = True
     server = socketserver.TCPServer(("", port), HTTPHandler)
-    server.allow_reuse_address = True
     return server
 
 

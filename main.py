@@ -20,14 +20,14 @@ class OctogonWidget(QWidget):
 
 def main():
 
+    server = create_server()
+
     try:
         app = QApplication(sys.argv)
 
         window = OctogonWidget()
-
         # start server in another thread
 
-        server = create_server()
         thread = threading.Thread(target=start_server, args=(server, ))
         thread.daemon = True
         thread.start()
