@@ -13,6 +13,8 @@ body {
 	color: white;
 }
 
+/* bracket matches */
+
 .round-name, .round-type {
 	width: 100%;
 	height: 15px;
@@ -78,6 +80,8 @@ body {
 
 	font-weight: bolder;
 }
+ 
+/* ladder standings */
 
 .standings {
 	/*margin-top: 40px;*/
@@ -85,47 +89,60 @@ body {
 	mix-blend-mode: color-dodge;
 }
 
+
+.place {
+	width: 350px;
+	height: 30px;
+	overflow: hidden;
+
+	padding: 6px 0px 6px -0px;
+	margin-bottom: 20px;
+
+	color: white;
+	background: rgba(255, 255, 255, 0.1);
+	mix-blend-mode: color-dodge;
+	border-radius: 4px;
+
+	text-shadow: 2px 2px 8px black;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
 .placement-wrapper {
+	margin-left: 0px;
+	display: inline-block;
 }
 
 .placement {
-	display: inline-block;
-	position: absolute;
-	margin-top: -10px;
+	display: block;
+	position: relative;
+
 	width: 50px;
 	height: 50px;
-	border-radius: 25px;
-	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-	background: white;
+
+	margin-top: -10px;
+
 	color: black;
+	background: white;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+	/*border-radius: 25px;*/
+
 	text-align: center;
-	vertical-align: middle;
 	line-height: 50px;
 	text-shadow: none;
 	font-style: normal;
+	font-weight: bold;
 	font-size: 18pt;
 }
 
 .name {
 	display: inline-block;
 	height: 40px;
-	margin-left: 70px;
-	vertical-align: center;
+	margin-left: 20px;
 	line-height: 30px;
 }
 
-.place {
-	padding: 6px 0px 6px 30px;
-	margin-bottom: 20px;
-	border-radius: 4px;
-	width: 350px;
-	height: 30px;
-	background: rgba(255, 255, 255, 0.1);
-	mix-blend-mode: color-dodge;
-	color: white;
-	text-shadow: 2px 2px 8px black;
-	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-}
+
+/* countdown timer */
 
 .countdown-caption {
 	letter-spacing: 4px;
