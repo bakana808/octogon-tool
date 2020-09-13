@@ -5,6 +5,14 @@ from jinja2 import FileSystemLoader, Environment
 
 entrants = dict()
 
+# tournament / event ids to use
+smashgg_tournament_slug = "octo-gon-2"
+smashgg_event_id = 517237
+
+print("currently using these ids for data queries:")
+print(f"tournament: { smashgg_tournament_slug }")
+print(f"event: { smashgg_event_id }")
+
 
 def get_placement_delta(entrant, placement):
 
@@ -19,9 +27,14 @@ def get_placement_delta(entrant, placement):
 
 # read HTML template
 
-env = Environment(loader=FileSystemLoader("./"))
-template = env.get_template('template.html')
-temp_countdown = env.get_template('countdown.html')
+
+class Templates:
+
+    env = Environment(loader=FileSystemLoader("./"))
+    ladder = env.get_template('templates/ladder.html')
+    countdown = env.get_template('templates/countdown.html')
+    bracket = env.get_template('templates/bracket.html')
+
 
 # HTML server
 
@@ -40,7 +53,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             # self.send_header("Content-type", "text/html")
             self.end_headers()
-            res = smashgg.query_standings(517237)
+            res = smashgg.query_standings(smashgg_event_id)
             body = ""
 
             placements = res["data"]["event"]["standings"]["nodes"]
@@ -69,7 +82,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                 """
                 placement += 1
 
-            self.wfile.write(bytes(template.render(body=body), "utf8"))
+            self.wfile.write(bytes(Templates.ladder.render(body=body), "utf8"))
 
         # ------------------------------------------------------------------------------
         #  Countdown Overlay
@@ -87,14 +100,14 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 }
             """,
-                                slug="octo-gon-2")
+                                slug=smashgg_tournament_slug)
 
             timestamp = res["data"]["tournament"]["startAt"]
 
             print(f"tournament starts at {timestamp}")
 
             self.wfile.write(
-                bytes(temp_countdown.render(timestamp=timestamp), "utf8"))
+                bytes(Templates.countdown.render(timestamp=timestamp), "utf8"))
 
         # ------------------------------------------------------------------------------
         #  Bracket Overlay
@@ -125,7 +138,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 }
             """,
-                                id=517237)
+                                id=smashgg_event_id)
 
             body = ""
             for s in reversed(res["data"]["event"]["sets"]["nodes"]):
@@ -149,7 +162,8 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
                 print(s)
 
-            self.wfile.write(bytes(template.render(body=body), "utf8"))
+            self.wfile.write(bytes(Templates.bracket.render(body=body),
+                                   "utf8"))
 
         else:  # attempt to serve the requested path as a file
             try:
