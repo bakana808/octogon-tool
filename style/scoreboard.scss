@@ -1,0 +1,184 @@
+@import "variables.scss";
+
+//======================================================================================
+// SCOREBOARD
+//======================================================================================
+
+$sb_side_width: 328px;
+$sb_border_width: 6px;
+
+@mixin sb_border {
+	border-width: $sb_border_width;
+	border-style: solid;
+	border-color: $accent;
+	//border-color: $bg_solid;
+}
+
+.sb_title {
+	@include drop_shadow;
+
+	position: absolute;
+
+	height: 46px;
+	width: 1920 - (2 * $sb_side_width);
+
+	top: 20px;
+	left: $sb_side_width;
+
+	background: $bg_solid;
+	z-index: -1;
+
+	text-align: center;
+}
+
+#sb_roundtitle,
+#sb_roundtype {
+	@include font_h2;
+
+	display: inline-block;
+
+	font-size: 14pt;
+	color: $fg_dark;
+	line-height: 46px;
+}
+#sb_roundtitle {
+	&::after {
+		content: " · ";
+	}
+}
+
+.border {
+	@include drop_shadow;
+
+	width: $sb_border_width;
+	height: 100%;
+
+	//top: 60px;
+
+	background: $bg_solid;
+}
+
+#border_l {
+	position: absolute;
+	left: $sb_side_width;
+}
+
+#border_r {
+	position: absolute;
+	right: $sb_side_width;
+}
+
+#border_full {
+	@include sb_border;
+	@include glass_panel;
+
+	position: absolute;
+	box-sizing: border-box;
+
+	height: 1080px - 40px;
+	width: 1920px - (2 * $sb_side_width);
+
+	margin-top: 20px;
+	left: $sb_side_width;
+}
+
+.sb_container {
+	@include sb_border;
+	@include glass_panel;
+	@include text_shadow;
+
+	box-sizing: border-box;
+
+	width: $sb_side_width - 20px - 20px;
+	height: 400px;
+
+	margin-top: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+
+	background: $bg_light;
+
+	text-align: center;
+	font-size: 30px;
+	font-style: normal;
+}
+
+#p1_container {
+	position: absolute;
+	left: 0px;
+}
+
+#p2_container {
+	position: absolute;
+	right: 0px;
+}
+
+.sb_name {
+	@include font_h1;
+
+	color: $fg_dark;
+	background: $bg_solid;
+
+	font-size: 14pt;
+	font-weight: bolder;
+	letter-spacing: 2px;
+	text-shadow: none;
+	height: 40px;
+	line-height: 36px;
+}
+
+.sb_wincounter {
+	position: absolute;
+
+	height: 40px;
+	width: 300px - 20px - 20px;
+	top: 100%;
+
+	margin-top: 20px;
+}
+
+#p1_container > .sb_wincounter {
+	text-align: right;
+	padding-right: 20px;
+}
+#p2_container > .sb_wincounter {
+	text-align: left;
+	padding-left: 20px;
+}
+
+.sb_winicon {
+	display: inline-block;
+
+	width: 40px;
+	height: 40px;
+
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.sb_winicon span {
+	@include drop_shadow;
+
+	display: inline-block;
+	box-sizing: border-box;
+
+	width: 40px;
+	height: 40px;
+
+	text-align: center;
+	vertical-align: middle;
+
+	border-radius: 40px;
+	border-width: 6px;
+	border-style: solid;
+	border-color: rgba(255, 255, 255, 0.5);
+
+	line-height: 40px;
+}
+
+.sb_winicon_filled span {
+	width: 40px;
+	height: 40px;
+
+	background: rgba(255, 255, 255, 1);
+}
