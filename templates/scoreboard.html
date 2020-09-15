@@ -3,26 +3,32 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>octogon scoreboard</title>
-		<link rel="stylesheet" href="style.css" />
+		<link rel="stylesheet" href="style/style.css" />
 		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
 		<script src="scripts/scoreboard_reader.js"></script>
 	</head>
 	<body>
+		<div class="sb_title">
+			<div id="sb_roundtitle"></div>
+			<div id="sb_roundtype"></div>
+		</div>
 		<div id="p1_container" class="sb_container">
 			<div id="p1_name" class="sb_name"></div>
 			<div class="sb_wincounter">
-				<div id="p1_w1" class="sb_windot sb_windot_filled"></div>
-				<div id="p1_w2" class="sb_windot"></div>
-				<div id="p1_w3" class="sb_windot"></div>
+				<div id="p1_w3" class="sb_winicon"><span /></div>
+				<div id="p1_w2" class="sb_winicon"><span /></div>
+				<div id="p1_w1" class="sb_winicon sb_winicon_filled"><span /></div>
 			</div>
 		</div>
 		<div id="p2_container" class="sb_container">
 			<div id="p2_name" class="sb_name"></div>
 			<div class="sb_wincounter">
-				<div id="p2_w1" class="sb_windot sb_windot_filled"></div>
-				<div id="p2_w2" class="sb_windot"></div>
-				<div id="p2_w3" class="sb_windot"></div>
+				<div id="p2_w1" class="sb_winicon sb_winicon_filled"><span /></div>
+				<div id="p2_w2" class="sb_winicon"><span /></div>
+				<div id="p2_w3" class="sb_winicon"><span /></div>
 			</div>
 		</div>
+		<div id="border_l" class="border"></div>
+		<div id="border_r" class="border"></div>
 	</body>
 </html>

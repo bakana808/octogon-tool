@@ -1,14 +1,12 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>title</title>
-        <link rel="stylesheet" href="style.css">
+	<head>
+		<meta charset="utf-8" />
+		<title>title</title>
+		<link rel="stylesheet" href="style/style.css" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-        <script type="text/javascript">
+		<script type="text/javascript">
 			$(document).ready(function() {
 				setInterval(function() {
 					var start = moment.unix({{ timestamp }}).utcOffset("-10");
@@ -24,11 +22,11 @@
 				}, 1000);
 			});
 		</script>
-    </head>
-    <body>
+	</head>
+	<body>
 		<div class="wrapper">
 			<div class="countdown-caption">The tournament will start in</div>
 			<div class="countdown"></div>
 		</div>
-    </body>
+	</body>
 </html>

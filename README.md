@@ -11,6 +11,8 @@ super early stuff
 - Python 3
 - Requests (`pip install requests`)
 - Jinja2 (`pip install jinja2`)
+- PySCSS (`pip install pyscss`)
+- Watchdog (`pip install watchdog`)
 
 ## Usage
 
