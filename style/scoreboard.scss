@@ -21,7 +21,7 @@ $sb_windot_radius: 30px;
 
 	position: absolute;
 
-	height: 40px;
+	height: 40px - $sb_border_width;
 	width: 100%;
 	//width: 1920 - (2 * $sb_side_width);
 
@@ -42,7 +42,7 @@ $sb_windot_radius: 30px;
 
 	font-size: 14pt;
 	color: $fg_dark;
-	line-height: 40px;
+	line-height: 40px - $sb_border_width - 2px;
 	letter-spacing: 2px;
 }
 #sb_roundtitle {
@@ -128,8 +128,13 @@ $sb_windot_radius: 30px;
 	overflow: hidden;
 }
 
+#p1_portrait {
+	transform: scaleX(-1);
+}
+
 .sb_name {
 	@include font_h1;
+	box-sizing: border-box;
 
 	color: $fg_dark;
 	background: $bg_solid;
@@ -140,6 +145,20 @@ $sb_windot_radius: 30px;
 	text-shadow: none;
 	height: 40px;
 	line-height: 36px;
+
+	&#p1_name {
+		border-bottom: solid;
+		border-color: #c45d5d;
+		color: #c45d5d;
+		border-width: $sb_border_width;
+	}
+
+	&#p2_name {
+		border-bottom: solid;
+		border-color: #446fa7;
+		color: #446fa7;
+		border-width: $sb_border_width;
+	}
 }
 
 .sb_wincounter {
@@ -190,7 +209,7 @@ $sb_windot_radius: 30px;
 	border-radius: 40px;
 	border-width: $sb_border_width;
 	border-style: solid;
-	border-color: rgba(255, 255, 255, 0.5);
+	border-color: rgba(255, 255, 255, 0.1);
 
 	line-height: 40px;
 }
