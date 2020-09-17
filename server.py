@@ -1,12 +1,14 @@
 import http.server
 import socketserver
 import smashgg
+import os
+from urllib.parse import unquote
 from jinja2 import FileSystemLoader, Environment
 
 entrants = dict()
 
 # tournament / event ids to use
-smashgg_tournament_slug = "octo-gon-2"
+smashgg_tournament_slug = "octo-gon-3"
 smashgg_event_id = 517237
 
 print("currently using these ids for data queries:")
@@ -43,7 +45,9 @@ class Templates:
 class HTTPHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
 
-        print(f"requesting file: {self.path}")
+        self.path = unquote(self.path)
+        print(f"requesting path: {self.path}")
+        ext = os.path.splitext(self.path)[1]
 
         # ------------------------------------------------------------------------------
         #  Ladder Standings Overlay
@@ -185,7 +189,17 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(Templates.scoreboard.render(), "utf8"))
 
-        else:  # attempt to serve the requested path as a file
+        elif ext == ".png":  # attempt to serve the requested path as a file
+
+            f = open(self.path[1:], "rb")
+
+            self.send_response(200)
+            self.send_header("Content-type", "image/png")
+            self.end_headers()
+
+            self.wfile.write(f.read())
+            f.close()
+        else:
             try:
                 f = open(self.path[1:], "r")
 

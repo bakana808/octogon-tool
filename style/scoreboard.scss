@@ -5,13 +5,15 @@
 //======================================================================================
 
 $sb_side_width: 328px;
-$sb_border_width: 6px;
+$sb_border_width: 4px;
+
+$sb_windot_radius: 30px;
 
 @mixin sb_border {
 	border-width: $sb_border_width;
 	border-style: solid;
-	border-color: $accent;
-	//border-color: $bg_solid;
+	//border-color: $accent;
+	border-color: $bg_solid;
 }
 
 .sb_title {
@@ -19,11 +21,12 @@ $sb_border_width: 6px;
 
 	position: absolute;
 
-	height: 46px;
-	width: 1920 - (2 * $sb_side_width);
+	height: 40px;
+	width: 100%;
+	//width: 1920 - (2 * $sb_side_width);
 
-	top: 20px;
-	left: $sb_side_width;
+	//top: 20px;
+	//left: $sb_side_width;
 
 	background: $bg_solid;
 	z-index: -1;
@@ -39,7 +42,8 @@ $sb_border_width: 6px;
 
 	font-size: 14pt;
 	color: $fg_dark;
-	line-height: 46px;
+	line-height: 40px;
+	letter-spacing: 2px;
 }
 #sb_roundtitle {
 	&::after {
@@ -78,6 +82,8 @@ $sb_border_width: 6px;
 	height: 1080px - 40px;
 	width: 1920px - (2 * $sb_side_width);
 
+	background: none;
+
 	margin-top: 20px;
 	left: $sb_side_width;
 }
@@ -113,6 +119,15 @@ $sb_border_width: 6px;
 	right: 0px;
 }
 
+.sb_portrait {
+	width: 100%;
+	height: 352px; // magic number ??
+
+	background-size: 100%;
+
+	overflow: hidden;
+}
+
 .sb_name {
 	@include font_h1;
 
@@ -129,21 +144,25 @@ $sb_border_width: 6px;
 
 .sb_wincounter {
 	position: absolute;
+	box-sizing: border-box;
 
 	height: 40px;
-	width: 300px - 20px - 20px;
+	width: $sb_side_width - 20px - 20px;
 	top: 100%;
 
 	margin-top: 20px;
+
+	text-align: center;
+
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 #p1_container > .sb_wincounter {
-	text-align: right;
-	padding-right: 20px;
+	//text-align: right;
 }
 #p2_container > .sb_wincounter {
-	text-align: left;
-	padding-left: 20px;
+	//text-align: left;
 }
 
 .sb_winicon {
@@ -162,14 +181,14 @@ $sb_border_width: 6px;
 	display: inline-block;
 	box-sizing: border-box;
 
-	width: 40px;
-	height: 40px;
+	width: $sb_windot_radius;
+	height: $sb_windot_radius;
 
 	text-align: center;
 	vertical-align: middle;
 
 	border-radius: 40px;
-	border-width: 6px;
+	border-width: $sb_border_width;
 	border-style: solid;
 	border-color: rgba(255, 255, 255, 0.5);
 
@@ -177,8 +196,8 @@ $sb_border_width: 6px;
 }
 
 .sb_winicon_filled span {
-	width: 40px;
-	height: 40px;
+	width: $sb_windot_radius;
+	height: $sb_windot_radius;
 
 	background: rgba(255, 255, 255, 1);
 }

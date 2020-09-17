@@ -1,11 +1,19 @@
 import sys
 from server import start_server, create_server
+from watcher import start_watcher
 import threading
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
-from PyQt5.QtWidgets import (QLabel, QGridLayout, QLineEdit, QWidget,
-                             QSizePolicy, QSpacerItem, QVBoxLayout)
+from PyQt5.QtWidgets import (
+    QLabel,
+    QGridLayout,
+    QLineEdit,
+    QWidget,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
 
 
 class OctogonWidget(QMainWindow):
@@ -46,15 +54,15 @@ class OctogonWidget(QMainWindow):
         # menubar
 
         action = QAction("&Exit", self)
-        action.setShortcut('Ctrl+C')
-        action.setStatusTip('Close the panel')
+        action.setShortcut("Ctrl+C")
+        action.setStatusTip("Close the panel")
         action.triggered.connect(qApp.quit)
 
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
+        fileMenu = menubar.addMenu("&File")
         fileMenu.addAction(action)
 
-        self.statusBar().showMessage('Ready')
+        self.statusBar().showMessage("Ready")
 
         self.setGeometry(300, 300, 800, 600)
         self.setWindowTitle("Octogon Panel")
@@ -68,6 +76,7 @@ class OctogonWidget(QMainWindow):
 def main():
 
     server = create_server()
+    observer = start_watcher()
 
     try:
         app = QApplication(sys.argv)
@@ -75,16 +84,24 @@ def main():
         window = OctogonWidget()
         # start server in another thread
 
-        thread = threading.Thread(target=start_server, args=(server, ))
+        thread = threading.Thread(target=start_server, args=(server,))
         thread.daemon = True
         thread.start()
+
+        watcher_thread = threading.Thread(target=observer.start)
+        watcher_thread.daemon = True
+        watcher_thread.start()
 
         app.exec()
     except Exception as e:
         print(e)
     finally:
         server.shutdown()
+        thread.join()
         print("server has stopped.")
+        observer.stop()
+        watcher_thread.join()
+        print("watcher has stopped.")
 
 
 main()

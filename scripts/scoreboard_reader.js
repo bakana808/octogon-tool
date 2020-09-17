@@ -17,6 +17,13 @@ function get_elm(id) {
 	return document.getElementById(id);
 }
 
+function get_portrait_path(character) {
+	if (character === "") {
+		return `/assets/portraits/Random CPU.png`;
+	}
+	return `/assets/portraits/${character}/Default.png`;
+}
+
 class ScoreboardData {
 	constructor(json) {
 		/** @type {object} */
@@ -39,7 +46,7 @@ class ScoreboardData {
 	 * @param {string} key a period seperated list of json keys
 	 * @param {function} callback a callback function
 	 */
-	run_on_changed(key, callback) {
+	on_modified(key, callback) {
 		var keys = key.split(".");
 
 		// check if saved data is null
@@ -90,14 +97,32 @@ async function sb_update() {
 	console.log("fetching data...");
 	data = await fetch_sb_data();
 
-	data.run_on_changed("p1.name", (name) => {
+	data.on_modified("p1.name", (name) => {
 		console.log("updating p1 name");
 		get_elm("p1_name").textContent = name;
 	});
 
-	data.run_on_changed("p2.name", (name) => {
+	data.on_modified("p1.character", (character) => {
+		var path = get_portrait_path(character);
+		get_elm("p1_portrait").style.backgroundImage = `url("${path}")`;
+	});
+
+	data.on_modified("p2.name", (name) => {
 		console.log("updating p2 name");
 		get_elm("p2_name").textContent = name;
+	});
+
+	data.on_modified("p2.character", (character) => {
+		var path = get_portrait_path(character);
+		get_elm("p2_portrait").style.backgroundImage = `url("${path}")`;
+	});
+
+	data.on_modified("round_title", (title) => {
+		get_elm("sb_roundtitle").textContent = title;
+	});
+
+	data.on_modified("round_games", (games) => {
+		get_elm("sb_roundtype").textContent = `Best of ${games}`;
 	});
 
 	data.update_cache();
@@ -108,4 +133,3 @@ async function sb_update() {
 window.onload = () => {
 	setInterval(() => sb_update(), 1000);
 };
-
