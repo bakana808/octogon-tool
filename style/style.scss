@@ -14,11 +14,14 @@ body {
 .round-name,
 .round-type {
 	@include font_h1;
+	box-sizing: border-box;
 
 	width: 100%;
 	height: 15px;
 	margin-top: 8px;
 	line-height: 15px;
+	padding-right: 20px;
+	padding-left: 20px;
 }
 
 .title {
@@ -30,21 +33,32 @@ body {
 
 .match {
 	@include glass_panel;
+	box-sizing: border-box;
 
 	height: 80px;
 	width: 100%;
 	display: inline-block;
 	margin-bottom: 10px;
-	padding-left: 20px;
+	//padding-left: 40px;
 	line-height: 50px;
+
+	text-align: center;
+}
+
+.match-players {
+	display: inline-block;
+	box-sizing: border-box;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 .vs {
 	@include font_vs;
 
-	display: inline-block;
 	vertical-align: top;
 	width: 10%;
+	margin-left: 20px;
+	margin-right: 20px;
 	height: 100%;
 	line-height: 50px;
 
@@ -53,7 +67,7 @@ body {
 
 .player {
 	display: inline-block;
-	width: 40%;
+	width: 180px;
 	height: 30px;
 	overflow: show;
 
@@ -144,7 +158,6 @@ body {
 }
 
 .countdown {
-	@include drop_shadow;
 	@include font_countdown;
 }
 

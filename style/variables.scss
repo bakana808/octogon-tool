@@ -58,6 +58,8 @@ $accent: #6975de;
 }
 
 @mixin font_countdown {
+	@include text_shadow;
+
 	letter-spacing: 4px;
 	font-size: 72pt;
 	font-style: normal;
