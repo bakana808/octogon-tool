@@ -1,0 +1,28 @@
+
+query Bracket($id: ID) {
+	event(id: $id){
+		id
+			sets(page: 1, perPage: 20, sortType: MAGIC) {
+				nodes{
+					fullRoundText
+					totalGames
+					winnerId
+					displayScore(mainEntrantId: 0)
+					identifier
+					slots {
+						entrant{
+							id
+							name
+						}
+						standing {
+							stats {
+								score {
+									value
+								}
+							}
+						}
+					}
+				}
+			}
+	}
+}

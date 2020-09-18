@@ -9,7 +9,8 @@ entrants = dict()
 
 # tournament / event ids to use
 smashgg_tournament_slug = "octo-gon-3"
-smashgg_event_id = 517237
+smashgg_event_id = 519066
+# smashgg_event_id = 517237
 
 print("currently using these ids for data queries:")
 print(f"tournament: { smashgg_tournament_slug }")
@@ -41,6 +42,8 @@ class Templates:
 
 # HTML server
 
+smash_api = smashgg.SmashAPI()
+
 
 class HTTPHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -58,7 +61,9 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             # self.send_header("Content-type", "text/html")
             self.end_headers()
-            res = smashgg.query_standings(smashgg_event_id)
+            res = smash_api.query(
+                "standings", eventId=smashgg_event_id, page=1, perPage=10
+            )
             body = ""
 
             placements = res["data"]["event"]["standings"]["nodes"]
@@ -104,7 +109,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            res = smashgg.query(
+            res = smash_api.query_raw(
                 """
                 query TournamentQuery($slug: String) {
                     tournament(slug: $slug) {
@@ -132,48 +137,48 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            res = smashgg.query(
-                """
-                query BracketQuery($id: ID!) {
-                    event(id: $id) {
-                        sets(page: 1, perPage: 10, sortType: CALL_ORDER) {
-                            nodes {
-                                winnerId
-                                fullRoundText
-                                setGamesType
-                                totalGames
-                                slots(includeByes: false) {
-                                    entrant {
-                                        id
-                                        name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            """,
-                id=smashgg_event_id,
-            )
+            res = smash_api.query("bracket", id=smashgg_event_id)
+
+            print(res)
 
             body = ""
-            for s in reversed(res["data"]["event"]["sets"]["nodes"]):
+            # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
+            for s in res["data"]["event"]["sets"]["nodes"]:
+                round_text = s["fullRoundText"]
+                round_games = s["totalGames"]
+
+                # skip grand final reset set
+                if round_text == "Grand Final Reset":
+                    continue
+
                 body += f"""
                     <div class="match">
-                        <div class="round-name">{ s["fullRoundText"] } · Best of { s["totalGames"] }</div>
+                        <div class="round-name">{ round_text } · Best of { round_games }</div>
                 """
+                body += """<div class="match-players">"""
                 winner_id = s["winnerId"]
                 for i, entrant in enumerate(s["slots"]):
+
+                    if entrant["entrant"]:
+                        name = entrant["entrant"]["name"]
+                        id = entrant["entrant"]["id"]
+                    else:  # placeholder entrant
+                        name = "?"
+                        id = None
+
                     # append span representing a player
-                    if entrant["entrant"]["id"] == winner_id:
-                        body += f"""<span class="player winner">{ entrant["entrant"]["name"] }</span>"""
+                    if winner_id and id == winner_id:
+                        body += (
+                            f"""<span class="player winner">{ name }</span>"""
+                        )
                     else:
-                        body += f"""<span class="player">{ entrant["entrant"]["name"] }</span>"""
+                        body += f"""<span class="player">{ name }</span>"""
 
                     # append "vs" text
                     if i < len(s["slots"]) - 1:
                         body += """<span class="vs">vs.</span>"""
 
+                body += "</div>"
                 body += "</div>"
 
                 print(s)

@@ -1,53 +1,56 @@
 import json
+import os
 import requests
 
 # functions for querying smash.gg API
 
 
-def query(q, **kwargs):
-    """
-    Queries the Smash.gg API.
-    Returns an object containing the data returned.
-    """
-    # the current entry URL to the API
-    url = "https://api.smash.gg/gql/alpha"
-    # the json containing the query and variables
-    j = {"query": q, "variables": json.dumps(kwargs)}
-    # the API token to use
-    api_token = open("dev-key.txt", "r").read().strip()
-    # the required headers to authorize the request
-    headers = {"Authorization": f"Bearer {api_token}"}
+class SmashAPI:
 
-    r = requests.post(url=url, json=j, headers=headers)
-    return json.loads(r.text)
+    PATH: str = "queries/"
 
+    def __init__(self):
 
-def query_standings(event_id):
-    """
-    Returns the standings of the event with the given ID.
-    """
-    res = query("""
-        query EventStandings($eventId: ID!, $page: Int!, $perPage: Int!) {
-            event(id: $eventId) {
-                id
-                name
-                standings(query: {
-                    perPage: $perPage,
-                    page: $page
-                }){
-                    nodes {
-                        placement
-                        entrant {
-                            id
-                            name
-                        }
-                    }
-                }
-            }
-        }
-    """,
-                eventId=event_id,
-                page=1,
-                perPage=10)
+        self.queries = {}
 
-    return res
+        files = [
+            os.path.join(SmashAPI.PATH, f)
+            for f in os.listdir(SmashAPI.PATH)
+            if os.path.isfile(os.path.join(SmashAPI.PATH, f))
+        ]
+
+        print("loading queries...")
+        for filepath in files:
+            with open(filepath, "r") as f:
+                name = os.path.splitext(os.path.basename(filepath))[0]
+                self.queries[name] = f.read()
+                print(f'loaded query "{ name }"')
+
+        print("loading API key...")
+
+        with open("dev-key.txt", "r") as f:
+            self.api_key = f.read().strip()
+
+    def query(self, name, **kwargs):
+        """
+        Queries the Smash.gg API.
+        Returns an object containing the data returned.
+        """
+        # get our query from our saved queries
+        q = self.queries[name]
+
+        return self.query_raw(q, **kwargs)
+
+    def query_raw(self, q, **kwargs):
+        # the current entry URL to the API
+        url = "https://api.smash.gg/gql/alpha"
+
+        # the json containing the query and variables
+        j = {"query": q, "variables": json.dumps(kwargs)}
+
+        # the required headers to authorize the request
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+
+        r = requests.post(url=url, json=j, headers=headers)
+        return json.loads(r.text)
+
