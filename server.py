@@ -4,13 +4,15 @@ import smashgg
 import os
 from urllib.parse import unquote
 from jinja2 import FileSystemLoader, Environment
+from pyhtml import div, span
 
 entrants = dict()
 
 # tournament / event ids to use
-smashgg_tournament_slug = "octo-gon-3"
-smashgg_event_id = 519066
-# smashgg_event_id = 517237
+smashgg_tournament_slug = "octo-gon-4"
+# smashgg_event_id = 521088  # octo-gon 4 singles
+smashgg_event_id = 519066  # octo-gon 3 singles
+# smashgg_event_id = 517237  # octo-gon 2 singles
 
 print("currently using these ids for data queries:")
 print(f"tournament: { smashgg_tournament_slug }")
@@ -137,54 +139,66 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            res = smash_api.query("bracket", id=smashgg_event_id)
+            bracket = smash_api.query_bracket(smashgg_event_id)
 
-            print(res)
+            divs = []
+            sets = bracket.get_unfinished_sets()
 
-            body = ""
-            # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
-            for s in res["data"]["event"]["sets"]["nodes"]:
-                round_text = s["fullRoundText"]
-                round_games = s["totalGames"]
+            if sets is None or len(sets) == 0:  # no matches were found
+                divs.append(
+                    div(class_="message")(
+                        "Waiting for the upcoming matches..."
+                    )
+                )
 
-                # skip grand final reset set
-                if round_text == "Grand Final Reset":
-                    continue
+            else:  # go through the matches
+                # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
+                for s in sets:
+                    round_text = s["fullRoundText"]
+                    round_games = s["totalGames"]
 
-                body += f"""
-                    <div class="match">
-                        <div class="round-name">{ round_text } · Best of { round_games }</div>
-                """
-                body += """<div class="match-players">"""
-                winner_id = s["winnerId"]
-                for i, entrant in enumerate(s["slots"]):
+                    # skip grand final reset set
+                    if round_text == "Grand Final Reset":
+                        continue
 
-                    if entrant["entrant"]:
-                        name = entrant["entrant"]["name"]
-                        id = entrant["entrant"]["id"]
-                    else:  # placeholder entrant
-                        name = "?"
-                        id = None
+                    match_divs = []
 
-                    # append span representing a player
-                    if winner_id and id == winner_id:
-                        body += (
-                            f"""<span class="player winner">{ name }</span>"""
+                    match_divs.append(
+                        div(class_="round-name")(
+                            f"{round_text} · Best of {round_games}"
                         )
-                    else:
-                        body += f"""<span class="player">{ name }</span>"""
+                    )
+                    winner_id = s["winnerId"]
 
-                    # append "vs" text
-                    if i < len(s["slots"]) - 1:
-                        body += """<span class="vs">vs.</span>"""
+                    for i, entrant in enumerate(s["slots"]):
 
-                body += "</div>"
-                body += "</div>"
+                        if entrant["entrant"]:
+                            name = entrant["entrant"]["name"]
+                            id = entrant["entrant"]["id"]
+                        else:  # placeholder entrant
+                            name = "?"
+                            id = None
 
-                print(s)
+                        # append span representing a player
+                        if winner_id and id == winner_id:
+                            match_divs.append(
+                                span(class_="player winner")(name)
+                            )
+                        else:
+                            match_divs.append(span(class_="player")(name))
+
+                        # append "vs" text
+                        if i < len(s["slots"]) - 1:
+                            match_divs.append(span(class_="vs")(".vs"))
+
+                    divs.append(div(class_="match")(*match_divs))
+
+            body_div = div(_class="standings")(*divs)
+
+            print(body_div.render())
 
             self.wfile.write(
-                bytes(Templates.bracket.render(body=body), "utf8")
+                bytes(Templates.bracket.render(body=body_div.render()), "utf8")
             )
 
         elif self.path == "/scoreboard":

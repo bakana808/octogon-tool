@@ -5,6 +5,33 @@ import requests
 # functions for querying smash.gg API
 
 
+class SmashggResponse:
+    def __init__(self, res):
+        self.res = res
+
+
+class SmashggBracket(SmashggResponse):
+    def get_sets(self):
+        """
+        Return a list of all sets in this bracket.
+        """
+        sets = self.res["data"]["event"]["sets"]["nodes"]
+        if sets is None:
+            sets = []
+
+        return sets
+
+    def get_unfinished_sets(self):
+        """
+        Return a list of sets without a winner.
+        """
+
+        sets = self._get_sets()
+
+        # only return sets without a winner
+        return [s for s in sets if not s["winnerId"]]
+
+
 class SmashAPI:
 
     PATH: str = "queries/"
@@ -53,4 +80,21 @@ class SmashAPI:
 
         r = requests.post(url=url, json=j, headers=headers)
         return json.loads(r.text)
+
+    def query_standings(self, event_id, page=1, per_page=10):
+
+        res = self.query(
+            "standings", eventId=event_id, page=page, perPage=per_page
+        )
+        return res
+
+    def query_bracket(self, event_id) -> SmashggBracket:
+        """
+        Query the upcoming matches in the bracket.
+
+        Note: if the tournament has not started or if there is no
+        active bracket, the "data.event.sets.nodes" key will be None.
+        """
+        res = self.query("bracket", id=event_id)
+        return SmashggBracket(res)
 
