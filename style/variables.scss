@@ -34,6 +34,9 @@ $accent: #6975de;
 	font-weight: bold;
 	text-transform: uppercase;
 	letter-spacing: 6px;
+}
+
+@mixin horizontal_line {
 	border-bottom: solid 2px rgba(white, 0.5);
 	padding-bottom: 30px;
 }

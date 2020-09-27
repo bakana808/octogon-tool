@@ -26,18 +26,35 @@ body {
 
 .title {
 	@include font_h2;
+	@include horizontal_line;
 
 	margin-top: 40px;
 	margin-bottom: 20px;
 }
 
-.match {
+.round-name {
+	@include font_h1;
+
+	display: inline-block;
+	text-align: center;
+	padding-bottom: 40px;
+}
+
+.set-id {
+	display: inline-block;
+	margin-right: 10px;
+	font-style: normal;
+}
+
+.set {
 	@include glass_panel;
 	box-sizing: border-box;
 
-	height: 80px;
+	height: 54px;
 	width: 100%;
 	display: inline-block;
+	padding-left: 10px;
+	padding-right: 10px;
 	margin-bottom: 10px;
 	//padding-left: 40px;
 	line-height: 50px;
@@ -70,11 +87,12 @@ body {
 	margin-top: 1px;
 }
 
+// players in sets
+
 .player {
 	display: inline-block;
 	width: 180px;
 	height: 30px;
-	overflow: hidden;
 
 	margin-top: 10px;
 
@@ -91,6 +109,26 @@ body {
 	color: $fg_dark;
 
 	font-weight: bolder;
+}
+
+.player-name {
+	display: inline-block;
+	width: 80%;
+	margin: none;
+	overflow: hidden;
+	vertical-align: top;
+}
+.player-score {
+	display: inline-block;
+	width: 15%;
+	margin: none;
+	padding: none;
+	vertical-align: top;
+	border-left: solid 1px $fg_light;
+}
+
+.winner > .player-score {
+	border-left: solid 1px $fg_dark;
 }
 
 /* ladder standings */

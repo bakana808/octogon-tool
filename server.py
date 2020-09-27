@@ -10,8 +10,8 @@ entrants = dict()
 
 # tournament / event ids to use
 smashgg_tournament_slug = "octo-gon-4"
-# smashgg_event_id = 521088  # octo-gon 4 singles
-smashgg_event_id = 519066  # octo-gon 3 singles
+smashgg_event_id = 521088  # octo-gon 4 singles
+# smashgg_event_id = 519066  # octo-gon 3 singles
 # smashgg_event_id = 517237  # octo-gon 2 singles
 
 print("currently using these ids for data queries:")
@@ -141,64 +141,96 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
             bracket = smash_api.query_bracket(smashgg_event_id)
 
-            divs = []
+            bracket_div = div(class_="standings")  # TODO: rename to bracket
+            bracket_children = []
             sets = bracket.get_unfinished_sets()
+            # sets = bracket.get_sets()
 
             if sets is None or len(sets) == 0:  # no matches were found
-                divs.append(
-                    div(class_="message")(
-                        "Waiting for the upcoming matches..."
-                    )
+                bracket_div *= div(class_="message")(
+                    "Waiting for the upcoming matches..."
                 )
 
             else:  # go through the matches
                 # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
+
+                last_round_name = None
+                round_div = None
+                round_children = []
+
                 for s in sets:
-                    round_text = s["fullRoundText"]
+                    round_name = s["fullRoundText"]
                     round_games = s["totalGames"]
 
                     # skip grand final reset set
-                    if round_text == "Grand Final Reset":
+                    if round_name == "Grand Final Reset":
                         continue
 
-                    match_divs = []
+                    # create a new round div
+                    if round_name != last_round_name:
+                        last_round_name = round_name
+                        if round_div:
+                            bracket_children.append(round_div(*round_children))
+                        round_div = div(class_="round")
+                        round_children = [
+                            span(class_="round-name")(
+                                f"{round_name} · Best of {round_games}"
+                            )
+                        ]
 
-                    match_divs.append(
-                        div(class_="round-name")(
-                            f"{round_text} · Best of {round_games}"
-                        )
-                    )
+                    set_div = div(class_="set")
+                    set_children = []
+
                     winner_id = s["winnerId"]
+
+                    # add the letter identifier for this set
+                    set_children.append(span(class_="set-id")(s["identifier"]))
 
                     for i, entrant in enumerate(s["slots"]):
 
                         if entrant["entrant"]:
                             name = entrant["entrant"]["name"]
                             id = entrant["entrant"]["id"]
+                            score = entrant["standing"]["stats"]["score"][
+                                "value"
+                            ]
                         else:  # placeholder entrant
                             name = "?"
                             id = None
+                            score = 0
 
                         # append span representing a player
                         if winner_id and id == winner_id:
-                            match_divs.append(
-                                span(class_="player winner")(name)
+                            set_children.append(
+                                span(class_="player winner")(
+                                    span(class_="player-name")(name),
+                                    span(class_="player-score")(score),
+                                )
                             )
                         else:
-                            match_divs.append(span(class_="player")(name))
+                            set_children.append(
+                                span(class_="player")(
+                                    span(class_="player-name")(name),
+                                    span(class_="player-score")(score),
+                                )
+                            )
 
                         # append "vs" text
                         if i < len(s["slots"]) - 1:
-                            match_divs.append(span(class_="vs")(".vs"))
+                            set_children.append(span(class_="vs")(".vs"))
 
-                    divs.append(div(class_="match")(*match_divs))
+                    round_children.append(set_div(*set_children))
 
-            body_div = div(_class="standings")(*divs)
+            # add the last round div
+            bracket_children.append(round_div)
+            bracket_div = bracket_div(*bracket_children)
 
-            print(body_div.render())
+            print(bracket_div.render())
 
             self.wfile.write(
-                bytes(Templates.bracket.render(body=body_div.render()), "utf8")
+                bytes(
+                    Templates.bracket.render(body=bracket_div.render()), "utf8"
+                )
             )
 
         elif self.path == "/scoreboard":

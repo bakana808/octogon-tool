@@ -26,7 +26,7 @@ class SmashggBracket(SmashggResponse):
         Return a list of sets without a winner.
         """
 
-        sets = self._get_sets()
+        sets = self.get_sets()
 
         # only return sets without a winner
         return [s for s in sets if not s["winnerId"]]
