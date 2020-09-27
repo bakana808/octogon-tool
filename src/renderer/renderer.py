@@ -225,6 +225,10 @@ class Renderer:
         Renders a 73:60 ratio mask for use in the background source.
         """
 
+        # TODO: be able to configure mask size
+        # TODO: be able to configure aspect ratio
+        # TODO: be able to offset position
+
         mask_size = 0.956  # the size of the view area (percentage)
 
         res = 1920, 1080  # the resolution of the canvas area
@@ -234,6 +238,12 @@ class Renderer:
         width = int(1080 * 73 / 60 * mask_size)
         x = int((res[0] - width) / 2)
         y = int(0)
+
+        # instead of making one rectangle to mask out view area from
+        # the background, we have to make four for the area
+        # around the view area...
+        # this is because the browser source in OBS doesn't support
+        # mask-mode: luminance
 
         # left letterbox pos/size
         inv_x = 0
