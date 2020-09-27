@@ -3,7 +3,7 @@ import socketserver
 import smashgg
 import os
 from urllib.parse import unquote
-from jinja2 import FileSystemLoader, Environment
+from src.html.renderer import HTMLTemplate
 from pyhtml import div, span
 
 entrants = dict()
@@ -35,11 +35,10 @@ def get_placement_delta(entrant, placement):
 
 class Templates:
 
-    env = Environment(loader=FileSystemLoader("./"))
-    ladder = env.get_template("templates/ladder.html")
-    countdown = env.get_template("templates/countdown.html")
-    bracket = env.get_template("templates/bracket.html")
-    scoreboard = env.get_template("templates/scoreboard.html")
+    ladder = HTMLTemplate("ladder.html")
+    countdown = HTMLTemplate("countdown.html")
+    bracket = HTMLTemplate("bracket.html")
+    scoreboard = HTMLTemplate("scoreboard.html")
 
 
 # HTML server
@@ -100,7 +99,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
                 """
                 placement += 1
 
-            self.wfile.write(bytes(Templates.ladder.render(body=body), "utf8"))
+            self.wfile.write(Templates.ladder.render(body=body))
 
         # ------------------------------------------------------------------------------
         #  Countdown Overlay
@@ -126,9 +125,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
             print(f"tournament starts at {timestamp}")
 
-            self.wfile.write(
-                bytes(Templates.countdown.render(timestamp=timestamp), "utf8")
-            )
+            self.wfile.write(Templates.countdown.render(timestamp=timestamp))
 
         # ------------------------------------------------------------------------------
         #  Bracket Overlay
@@ -228,9 +225,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             print(bracket_div.render())
 
             self.wfile.write(
-                bytes(
-                    Templates.bracket.render(body=bracket_div.render()), "utf8"
-                )
+                Templates.bracket.render(body=bracket_div.render())
             )
 
         elif self.path == "/scoreboard":
@@ -238,7 +233,7 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(bytes(Templates.scoreboard.render(), "utf8"))
+            self.wfile.write(Templates.scoreboard.render())
 
         elif ext == ".png":  # attempt to serve the requested path as a file
 
