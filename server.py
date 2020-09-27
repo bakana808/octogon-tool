@@ -1,14 +1,11 @@
 import http.server
 import socketserver
-import smashgg
 import os
 from urllib.parse import unquote
-from src.html.renderer import HTMLTemplate
-from pyhtml import div, span
-
-entrants = dict()
+from src.html.renderer import Renderer
 
 # tournament / event ids to use
+
 smashgg_tournament_slug = "octo-gon-4"
 smashgg_event_id = 521088  # octo-gon 4 singles
 # smashgg_event_id = 519066  # octo-gon 3 singles
@@ -18,32 +15,7 @@ print("currently using these ids for data queries:")
 print(f"tournament: { smashgg_tournament_slug }")
 print(f"event: { smashgg_event_id }")
 
-
-def get_placement_delta(entrant, placement):
-
-    if entrant not in entrants:
-        entrants[entrant] = placement
-
-    last_placement = entrants[entrant]
-    entrants[entrant] = placement
-
-    return last_placement - placement
-
-
-# read HTML template
-
-
-class Templates:
-
-    ladder = HTMLTemplate("ladder.html")
-    countdown = HTMLTemplate("countdown.html")
-    bracket = HTMLTemplate("bracket.html")
-    scoreboard = HTMLTemplate("scoreboard.html")
-
-
-# HTML server
-
-smash_api = smashgg.SmashAPI()
+renderer = Renderer()
 
 
 class HTTPHandler(http.server.SimpleHTTPRequestHandler):
@@ -51,7 +23,6 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
 
         self.path = unquote(self.path)
         print(f"requesting path: {self.path}")
-        ext = os.path.splitext(self.path)[1]
 
         # ------------------------------------------------------------------------------
         #  Ladder Standings Overlay
@@ -62,44 +33,8 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             # self.send_header("Content-type", "text/html")
             self.end_headers()
-            res = smash_api.query(
-                "standings", eventId=smashgg_event_id, page=1, perPage=10
-            )
-            body = ""
 
-            placements = res["data"]["event"]["standings"]["nodes"]
-
-            # test for handling changing placements
-            # random.shuffle(placements)
-
-            print(res)
-
-            placement = 1
-            for place in placements:
-                entrant = place["entrant"]["name"]
-                # placement = int(place["placement"])
-                delta = get_placement_delta(entrant, placement)
-
-                # add extra class for top4 placements
-                placement_classes = "placement"
-                if placement <= 4:
-                    placement_classes += " top4"
-
-                css_class = ""
-                if delta > 0:
-                    css_class = "up"
-                elif delta < 0:
-                    css_class = "down"
-                body += f"""
-                    <div class="place">
-                        <div class="placement-wrapper"><span class="{placement_classes}">{placement}</span></div>
-                        <!--span class="delta {css_class}">{delta}</span-->
-                        <span class="name">{entrant}</span>
-                    </div>
-                """
-                placement += 1
-
-            self.wfile.write(Templates.ladder.render(body=body))
+            self.wfile.write(renderer.render_standings(smashgg_event_id))
 
         # ------------------------------------------------------------------------------
         #  Countdown Overlay
@@ -110,22 +45,9 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            res = smash_api.query_raw(
-                """
-                query TournamentQuery($slug: String) {
-                    tournament(slug: $slug) {
-                        startAt
-                    }
-                }
-            """,
-                slug=smashgg_tournament_slug,
+            self.wfile.write(
+                renderer.render_countdown(smashgg_tournament_slug)
             )
-
-            timestamp = res["data"]["tournament"]["startAt"]
-
-            print(f"tournament starts at {timestamp}")
-
-            self.wfile.write(Templates.countdown.render(timestamp=timestamp))
 
         # ------------------------------------------------------------------------------
         #  Bracket Overlay
@@ -136,125 +58,42 @@ class HTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            bracket = smash_api.query_bracket(smashgg_event_id)
-
-            bracket_div = div(class_="standings")  # TODO: rename to bracket
-            bracket_children = []
-            sets = bracket.get_unfinished_sets()
-            # sets = bracket.get_sets()
-
-            if sets is None or len(sets) == 0:  # no matches were found
-                bracket_div *= div(class_="message")(
-                    "Waiting for the upcoming matches..."
-                )
-
-            else:  # go through the matches
-                # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
-
-                last_round_name = None
-                round_div = None
-                round_children = []
-
-                for s in sets:
-                    round_name = s["fullRoundText"]
-                    round_games = s["totalGames"]
-
-                    # skip grand final reset set
-                    if round_name == "Grand Final Reset":
-                        continue
-
-                    # create a new round div
-                    if round_name != last_round_name:
-                        last_round_name = round_name
-                        if round_div:
-                            bracket_children.append(round_div(*round_children))
-                        round_div = div(class_="round")
-                        round_children = [
-                            span(class_="round-name")(
-                                f"{round_name} · Best of {round_games}"
-                            )
-                        ]
-
-                    set_div = div(class_="set")
-                    set_children = []
-
-                    winner_id = s["winnerId"]
-
-                    # add the letter identifier for this set
-                    set_children.append(span(class_="set-id")(s["identifier"]))
-
-                    for i, entrant in enumerate(s["slots"]):
-
-                        if entrant["entrant"]:
-                            name = entrant["entrant"]["name"]
-                            id = entrant["entrant"]["id"]
-                            score = entrant["standing"]["stats"]["score"][
-                                "value"
-                            ]
-                        else:  # placeholder entrant
-                            name = "?"
-                            id = None
-                            score = 0
-
-                        # append span representing a player
-                        if winner_id and id == winner_id:
-                            set_children.append(
-                                span(class_="player winner")(
-                                    span(class_="player-name")(name),
-                                    span(class_="player-score")(score),
-                                )
-                            )
-                        else:
-                            set_children.append(
-                                span(class_="player")(
-                                    span(class_="player-name")(name),
-                                    span(class_="player-score")(score),
-                                )
-                            )
-
-                        # append "vs" text
-                        if i < len(s["slots"]) - 1:
-                            set_children.append(span(class_="vs")(".vs"))
-
-                    round_children.append(set_div(*set_children))
-
-            # add the last round div
-            bracket_children.append(round_div)
-            bracket_div = bracket_div(*bracket_children)
-
-            print(bracket_div.render())
-
-            self.wfile.write(
-                Templates.bracket.render(body=bracket_div.render())
-            )
+            self.wfile.write(renderer.render_bracket(smashgg_event_id))
 
         elif self.path == "/scoreboard":
 
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write(Templates.scoreboard.render())
-
-        elif ext == ".png":  # attempt to serve the requested path as a file
-
-            f = open(self.path[1:], "rb")
-
-            self.send_response(200)
-            self.send_header("Content-type", "image/png")
             self.end_headers()
 
-            self.wfile.write(f.read())
-            f.close()
-        else:
+            self.wfile.write(renderer.render_scoreboard())
+
+        else:  # attempt to serve the requested path as a file
+
+            ext = os.path.splitext(self.path)[1]
+
+            mimetypes = {".png": "image/png", ".css": "text/css"}
+
+            need_bytes = {".png": True}
+
+            mimetype = mimetypes.get(ext, "text/html")
+            as_bytes = need_bytes.get(ext, False)
+
             try:
-                f = open(self.path[1:], "r")
+
+                if as_bytes:
+                    f = open(self.path[1:], "rb")
+                else:
+                    f = open(self.path[1:], "rb")
 
                 self.send_response(200)
-                self.send_header("Content-type", "text/css")
+                self.send_header("Content-type", mimetype)
                 self.end_headers()
 
-                self.wfile.write(bytes(f.read(), "utf8"))
+                self.wfile.write(f.read())
+                f.close()
+
             except FileNotFoundError:
+
                 self.send_error(404, f"File Not Found: {self.path}")
 
 
