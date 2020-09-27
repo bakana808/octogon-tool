@@ -1,5 +1,5 @@
 from jinja2 import FileSystemLoader, Environment
-from smashgg import SmashAPI
+from api.smashgg import SmashAPI
 from pyhtml import div, span
 
 _env = Environment(loader=FileSystemLoader("./templates/"))
@@ -21,7 +21,10 @@ class HTMLTemplate:
         Makes it simpler to write to a HTTP request handler.
         """
 
-        return bytes(self.template.render(**kwargs), "utf8")
+        output = self.template.render(**kwargs)
+        print(output)
+        return output
+        # return bytes(self.template.render(**kwargs), "utf8")
 
 
 class Renderer:

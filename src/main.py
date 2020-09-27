@@ -1,11 +1,16 @@
 import sys
+import signal
 import traceback
 
-from server import start_server, create_server
+# from server import start_server, create_server
+from server import start_server, stop_server
+
 from watcher import start_watcher
 from data import scoreboard
 from gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
 import threading
+from multiprocessing import Process
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
@@ -21,6 +26,9 @@ from PyQt5.QtWidgets import (
     QButtonGroup,
     QCheckBox,
 )
+
+# allows program to exit with CTRL+C
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class OctogonWidget(QMainWindow):
@@ -159,7 +167,7 @@ class OctogonWidget(QMainWindow):
 
 def main():
 
-    server = create_server()
+    # server = create_server()
     observer = start_watcher()
 
     try:
@@ -168,7 +176,8 @@ def main():
         window = OctogonWidget()
         # start server in another thread
 
-        thread = threading.Thread(target=start_server, args=(server,))
+        # thread = threading.Thread(target=start_server, args=(server,))
+        thread = Process(target=start_server)
         thread.daemon = True
         thread.start()
 
@@ -176,11 +185,16 @@ def main():
         watcher_thread.daemon = True
         watcher_thread.start()
 
-        app.exec()
-    except Exception as e:
+        app.exec_()
+
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt()
+
+    except Exception:
         print(traceback.format_exc())
+
     finally:
-        server.shutdown()
+        thread.terminate()
         thread.join()
         print("server has stopped.")
         observer.stop()

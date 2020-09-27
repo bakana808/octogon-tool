@@ -30,7 +30,7 @@ to be able to query the smash.gg API for event and tournament information.
 
 ```cmd
 pip install -r requirements.txt
-python main.py
+python src/main.py
 ```
 
 serves to localhost at port 8000.
