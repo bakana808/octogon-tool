@@ -1,6 +1,6 @@
 from jinja2 import FileSystemLoader, Environment
 from api.smashgg import SmashAPI
-from pyhtml import div, span
+from renderer.html import div, span
 
 _env = Environment(loader=FileSystemLoader("./templates/"))
 
@@ -76,7 +76,6 @@ class Renderer:
         res = self.smashgg.query(
             "standings", eventId=event_id, page=1, perPage=10
         )
-        body = ""
 
         placements = res["data"]["event"]["standings"]["nodes"]
 
@@ -84,6 +83,8 @@ class Renderer:
         # random.shuffle(placements)
 
         print(res)
+
+        elm = div(class_="standings")
 
         placement = 1
         for place in placements:
@@ -104,29 +105,34 @@ class Renderer:
                 css_class = "up"
             elif delta < 0:
                 css_class = "down"
-            body += f"""
-                <div class="place">
-                    <div class="placement-wrapper"><span class="{placement_classes}">{placement}</span></div>
-                    <!--span class="delta {css_class}">{delta}</span-->
-                    <span class="name">{entrant}</span>
-                </div>
-            """
+
+            elm.add_child(
+                div(class_="place")(
+                    div(class_="placement-wrapper")(
+                        span(class_=placement_classes)(placement)
+                    ),
+                    # div(class_=f"delta {css_class}")(delta)
+                    span(class_="name")(entrant),
+                )
+            )
+
             placement += 1
 
-        return self.t_ladder.render(body=body)
+        print(elm.render())
+
+        return self.t_ladder.render(body=elm.render())
 
     def render_bracket(self, event_id) -> str:
 
         bracket = self.smashgg.query_bracket(event_id)
 
-        bracket_div = div(class_="standings")  # TODO: rename to bracket
-        bracket_children = []
+        elm = div(class_="standings")  # TODO: rename to bracket
         sets = bracket.get_unfinished_sets()
         # sets = bracket.get_sets()
 
         if sets is None or len(sets) == 0:  # no matches were found
-            bracket_div = div(class_="message")(
-                "Waiting for the upcoming matches..."
+            elm.add_child(
+                div(class_="message")("Waiting for the upcoming matches...")
             )
 
         else:  # go through the matches
@@ -134,7 +140,6 @@ class Renderer:
 
             last_round_name = None
             round_div = None
-            round_children = []
 
             for s in sets:
                 round_name = s["fullRoundText"]
@@ -148,21 +153,20 @@ class Renderer:
                 if round_name != last_round_name:
                     last_round_name = round_name
                     if round_div:
-                        bracket_children.append(round_div(*round_children))
+                        elm.add_child(round_div)
                     round_div = div(class_="round")
-                    round_children = [
+                    round_div.add_child(
                         span(class_="round-name")(
                             f"{round_name} · Best of {round_games}"
                         )
-                    ]
+                    )
 
                 set_div = div(class_="set")
-                set_children = []
 
                 winner_id = s["winnerId"]
 
                 # add the letter identifier for this set
-                set_children.append(span(class_="set-id")(s["identifier"]))
+                set_div.add_child(span(class_="set-id")(s["identifier"]))
 
                 for i, entrant in enumerate(s["slots"]):
 
@@ -177,14 +181,14 @@ class Renderer:
 
                     # append span representing a player
                     if winner_id and id == winner_id:
-                        set_children.append(
+                        set_div.add_child(
                             span(class_="player winner")(
                                 span(class_="player-name")(name),
                                 span(class_="player-score")(score),
                             )
                         )
                     else:
-                        set_children.append(
+                        set_div.add_child(
                             span(class_="player")(
                                 span(class_="player-name")(name),
                                 span(class_="player-score")(score),
@@ -193,17 +197,16 @@ class Renderer:
 
                     # append "vs" text
                     if i < len(s["slots"]) - 1:
-                        set_children.append(span(class_="vs")(".vs"))
+                        set_div.add_child(span(class_="vs")(".vs"))
 
-                round_children.append(set_div(*set_children))
+                round_div.add_child(set_div)
 
-        # add the last round div
-        bracket_children.append(round_div)
-        bracket_div = bracket_div(*bracket_children)
+            # add the last round div
+            elm.add_child(round_div)
 
-        print(bracket_div.render())
+        print(elm.render())
 
-        return self.t_bracket.render(body=bracket_div.render())
+        return self.t_bracket.render(body=elm.render())
 
     def render_scoreboard(self) -> bytes:
 
