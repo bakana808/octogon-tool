@@ -1,0 +1,32 @@
+
+<svg xmlns="http://www.w3.org/2000/svg">
+	<!--<rect height="1080" width="1920" y="0" x="0" fill="white" />-->
+	<rect
+		height="{{ mask_h }}"
+		width="{{ mask_w }}"
+		y="{{ mask_y }}"
+		x="{{ mask_x }}"
+		fill="black"
+		/>
+	<rect
+		height="{{ mask_h }}"
+		width="{{ mask_w }}"
+		y="{{ mask_y2 }}"
+		x="{{ mask_x2 }}"
+		fill="black"
+		/>
+	<rect
+		height="{{ mask_h3 }}"
+		width="{{ mask_w3 }}"
+		y="{{ mask_y3 }}"
+		x="{{ mask_x3 }}"
+		fill="black"
+		/>
+	<rect
+		height="{{ mask_h3 }}"
+		width="{{ mask_w3 }}"
+		y="{{ mask_y4 }}"
+		x="{{ mask_x4 }}"
+		fill="black"
+		/>
+</svg>

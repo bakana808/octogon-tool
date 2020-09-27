@@ -15,7 +15,7 @@ class HTMLTemplate:
         # the Jinja template
         self.template = _env.get_template(path)
 
-    def render(self, **kwargs) -> bytes:
+    def render(self, **kwargs) -> str:
         """
         Render this template as bytes.
         Makes it simpler to write to a HTTP request handler.
@@ -40,6 +40,8 @@ class Renderer:
         self.t_countdown = HTMLTemplate("countdown.html")
         self.t_bracket = HTMLTemplate("bracket.html")
         self.t_scoreboard = HTMLTemplate("scoreboard.html")
+        self.t_mask = HTMLTemplate("mask.svg")
+        self.t_background = HTMLTemplate("background.html")
 
         self.smashgg = SmashAPI()
 
@@ -206,3 +208,66 @@ class Renderer:
     def render_scoreboard(self) -> bytes:
 
         return self.t_scoreboard.render()
+
+    def render_background(self) -> str:
+
+        bg_path = "assets/bgs/1.png"
+
+        mask_src = self.render_mask()
+
+        with open("output/mask.svg", "w") as f:
+            f.write(mask_src)
+
+        return self.t_background.render(bg_path=bg_path)
+
+    def render_mask(self) -> str:
+        """
+        Renders a 73:60 ratio mask for use in the background source.
+        """
+
+        mask_size = 0.956  # the size of the view area (percentage)
+
+        res = 1920, 1080  # the resolution of the canvas area
+
+        # origin pos and size of the center view area
+        height = int(1080 * mask_size)
+        width = int(1080 * 73 / 60 * mask_size)
+        x = int((res[0] - width) / 2)
+        y = int(0)
+
+        # left letterbox pos/size
+        inv_x = 0
+        inv_y = 0
+        inv_w = (res[0] - width) // 2
+        inv_h = res[0]
+
+        # right letterbox pos (same size as left letterbox)
+        inv_x2 = inv_x + inv_w + width
+        inv_y2 = inv_y
+
+        # top letterbox pos/size
+        inv_x3 = inv_x + inv_w
+        inv_y3 = 0
+        inv_w3 = width
+        inv_h3 = (res[1] - height) // 2
+
+        # bottom letterbox
+        inv_x4 = inv_x3
+        inv_y4 = inv_h3 + height
+
+        # render the mask SVG
+        return self.t_mask.render(
+            mask_h=inv_h,
+            mask_w=inv_w,
+            mask_x=inv_x,
+            mask_y=inv_y,
+            mask_x2=inv_x2,
+            mask_y2=inv_y2,
+            mask_x3=inv_x3,
+            mask_y3=inv_y3,
+            mask_h3=inv_h3,
+            mask_w3=inv_w3,
+            mask_x4=inv_x4,
+            mask_y4=inv_y4,
+        )
+

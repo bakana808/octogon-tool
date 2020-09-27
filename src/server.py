@@ -55,6 +55,11 @@ def _scoreboard():
     return renderer.render_scoreboard()
 
 
+@app.route("/background")
+def _background():
+    return renderer.render_background()
+
+
 @app.route("/<path:path>", methods=["GET"])
 def _get_file(path):
     return send_from_directory("../", path)
