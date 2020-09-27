@@ -6,28 +6,47 @@ super early stuff
 
 ![Preview Screenshot](preview.png)
 
-## Requirements
+## features
 
-- Python 3
-- Requests (`pip install requests`)
-- Jinja2 (`pip install jinja2`)
-- PySCSS (`pip install pyscss`)
-- Watchdog (`pip install watchdog`)
+###
 
-## Usage
+- 
+### displays
 
-save a smash.gg API key to a file named `dev-key.txt` to be able to query the smash.gg API.
+- smash.gg bracket: shows all upcoming matches
+- standings: shows the top 10 players in a tournament
+- countdown: shows a countdown timer to the start of a tournament
+- scoreboard: shows a scoreboard overlay used for tournament matches (in 4:3)
+
+
+
+
+## running
+
+requires Python 3.
+
+some displays require a smash.gg API key to be saved to a file named `dev-key.txt`
+to be able to query the smash.gg API for event and tournament information.
+
+```cmd
+pip install -r requirements.txt
+python main.py
+```
 
 serves to localhost at port 8000.
 
-start server with `python client.py`
+## usage
 
 intended for use with the "browser source" source in OBS:
-- connect to `localhost:8000` for a matchmaking overlay.
-- connect to `localhost:8000/countdown` for a countdown overlay.
-- connect to `localhost:8000/bracket` for a bracket overlay.
-- connect to `localhost:8000/scoreboard` for a scoreboard overlay.
+- connect to `localhost:8000` for a matchmaking display
+- connect to `localhost:8000/countdown` for a countdown display
+- connect to `localhost:8000/bracket` for a bracket display
+- connect to `localhost:8000/scoreboard` for a scoreboard display
 
-## Customization
+## customization
 
-stylesheet located in `style.css`. (beware: it is messy)
+### custom layout/stylesheet
+
+HTML templates are located in `templates/` and the SCSS files used are located in `style/`.
+
+### custom 
