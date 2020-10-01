@@ -60,6 +60,20 @@ def _background():
     return renderer.render_background()
 
 
+current = 0
+
+
+@app.route("/rotation")
+def _rotation():
+    global current
+    if current == 0:
+        current += 1
+        return _smashgg_bracket()
+    elif current == 1:
+        current = 0
+        return _smashgg_standings()
+
+
 @app.route("/<path:path>", methods=["GET"])
 def _get_file(path):
     return send_from_directory("../", path)
