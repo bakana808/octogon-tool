@@ -1,8 +1,16 @@
 from jinja2 import FileSystemLoader, Environment
-from api.smashgg import SmashAPI
-from renderer.html import div, span
+import os
+from collections import Counter
+import random
+from octogon.api.smashgg import SmashAPI
+from octogon.api.smashgg.player import PlayerData
+from octogon.lookup import get_portrait_url
 
-_env = Environment(loader=FileSystemLoader("./templates/"))
+# from renderer.html import div, span
+from octogon.web.tag import div, span
+
+TEMPLATE_PATH = "./templates/"
+_env = Environment(loader=FileSystemLoader(TEMPLATE_PATH))
 
 
 class HTMLTemplate:
@@ -22,7 +30,7 @@ class HTMLTemplate:
         """
 
         output = self.template.render(**kwargs)
-        print(output)
+        # print(output)
         return output
         # return bytes(self.template.render(**kwargs), "utf8")
 
@@ -36,6 +44,20 @@ class Renderer:
 
         print("loading HTML templates...")
 
+        self.templates = {}
+
+        files = [
+            f
+            for f in os.listdir(TEMPLATE_PATH)
+            if os.path.isfile(os.path.join(TEMPLATE_PATH, f))
+        ]
+
+        for filepath in files:
+            name = os.path.splitext(os.path.basename(filepath))[0]
+            template = HTMLTemplate(filepath)
+            self.templates[name] = template
+            print(f"loaded template '{ name }' ({filepath})")
+
         self.t_ladder = HTMLTemplate("ladder.html")
         self.t_countdown = HTMLTemplate("countdown.html")
         self.t_bracket = HTMLTemplate("bracket.html")
@@ -47,9 +69,16 @@ class Renderer:
 
         print("done!")
 
+    def render(self, template_name: str, **kwargs) -> str:
+        """
+        Render a template by its name.
+        """
+
+        return self.templates[template_name].render(**kwargs)
+
     def render_countdown(self, tournament_slug: str) -> bytes:
 
-        res = self.smashgg.query("countdown", slug=tournament_slug)
+        res = self.smashgg.query("tournament", slug=tournament_slug)
 
         timestamp = res["data"]["tournament"]["startAt"]
 
@@ -78,13 +107,15 @@ class Renderer:
         )
 
         placements = res["data"]["event"]["standings"]["nodes"]
+        if not placements:
+            placements = []
 
         # test for handling changing placements
         # random.shuffle(placements)
 
         print(res)
 
-        elm = div(class_="standings")
+        elm = div(".standings")
 
         placement = 1
         for place in placements:
@@ -96,9 +127,9 @@ class Renderer:
             delta = 0
 
             # add extra css class for top4 placements
-            placement_classes = "placement"
+            placement_classes = ".placement"
             if placement <= 4:
-                placement_classes += " top4"
+                placement_classes += ".top4"
 
             css_class = ""
             if delta > 0:
@@ -107,33 +138,71 @@ class Renderer:
                 css_class = "down"
 
             elm.add_child(
-                div(class_="place")(
-                    div(class_="placement-wrapper")(
-                        span(class_=placement_classes)(placement)
+                div(".place")(
+                    div(".placement-wrapper")(
+                        span(placement_classes)(placement)
                     ),
                     # div(class_=f"delta {css_class}")(delta)
-                    span(class_="name")(entrant),
+                    span(".name")(entrant),
                 )
             )
 
             placement += 1
 
-        print(elm.render())
+        print(elm)
 
-        return self.t_ladder.render(body=elm.render())
+        return self.t_ladder.render(body=str(elm))
+
+    def render_player(
+        self,
+        side: int,
+        player: PlayerData,
+        score: int = 0,
+        is_winner: bool = False,
+    ) -> tuple:
+
+        print(f"rendering {player.name}")
+
+        character_url = get_portrait_url(player.get_last_character())
+
+        if is_winner:
+            classes = f"#player{side}.player.winner"
+        else:
+            classes = f"#player{side}.player"
+
+        player_div = span(classes)(
+            span(".player-name")(player.name),
+            span(".player-score")(score),
+        )
+
+        return player_div, character_url
+
+    def render_test_player(self):
+        tournament_id = "octo-gon-3"
+        event = self.smashgg.get_first_event(tournament_id)
+
+        entrant_id = random.choice(event.entrant_ids)
+        player = self.smashgg.get_player_from_entrant(event.id, entrant_id)
+
+        entrant_tup = self.render_player(0, player)
+
+        return self.render(
+            "player", body=entrant_tup[0], p0_bg=entrant_tup[1], p1_bg=""
+        )
 
     def render_bracket(self, event_id) -> str:
 
-        bracket = self.smashgg.query_bracket(event_id)
+        bracket = self.smashgg.get_event(event_id)
 
-        elm = div(class_="standings")  # TODO: rename to bracket
-        sets = bracket.get_unfinished_sets()
-        # sets = bracket.get_sets()
+        elm = div(".standings")  # TODO: rename to bracket
+        # sets = bracket.get_unfinished_sets()
+        sets = bracket.get_sets()
 
         if sets is None or len(sets) == 0:  # no matches were found
             elm.add_child(
-                div(class_="message")("Waiting for the upcoming matches...")
+                div(".message")("Waiting for the upcoming matches...")
             )
+            print("rendering entrant")
 
         else:  # go through the matches
             # for s in reversed(res["data"]["event"]["sets"]["nodes"]):
@@ -149,64 +218,64 @@ class Renderer:
                 if round_name == "Grand Final Reset":
                     continue
 
+                print(round_name)
+
                 # create a new round div
                 if round_name != last_round_name:
                     last_round_name = round_name
                     if round_div:
                         elm.add_child(round_div)
-                    round_div = div(class_="round")
+
+                    round_div = div(".round")
                     round_div.add_child(
-                        span(class_="round-name")(
+                        # round_children.append(
+                        span(".round-name")(
                             f"{round_name} · Best of {round_games}"
                         )
                     )
 
-                set_div = div(class_="set")
+                set_div = div(".set")
+                # set_children = []
 
                 winner_id = s["winnerId"]
 
                 # add the letter identifier for this set
-                set_div.add_child(span(class_="set-id")(s["identifier"]))
+                set_letter = s["identifier"]
+                if set_letter:
+                    set_div.add_child(span(".set-id")(set_letter))
 
                 for i, entrant in enumerate(s["slots"]):
 
                     if entrant["entrant"]:
                         name = entrant["entrant"]["name"]
                         id = entrant["entrant"]["id"]
-                        score = entrant["standing"]["stats"]["score"]["value"]
+                        score = (
+                            entrant["standing"]["stats"]["score"]["value"] or 0
+                        )
                     else:  # placeholder entrant
                         name = "?"
                         id = None
                         score = 0
 
-                    # append span representing a player
-                    if winner_id and id == winner_id:
-                        set_div.add_child(
-                            span(class_="player winner")(
-                                span(class_="player-name")(name),
-                                span(class_="player-score")(score),
-                            )
-                        )
-                    else:
-                        set_div.add_child(
-                            span(class_="player")(
-                                span(class_="player-name")(name),
-                                span(class_="player-score")(score),
-                            )
-                        )
+                    is_winner = id == winner_id
 
                     # append "vs" text
                     if i < len(s["slots"]) - 1:
-                        set_div.add_child(span(class_="vs")(".vs"))
+                        set_div.add_child(span(".vs")(".vs"))
+                        # set_children.append(span(class_="vs")(".vs"))
 
+                # round_children.append(div(class_="set")(set_children))
                 round_div.add_child(set_div)
+                # print(set_div)
 
             # add the last round div
+            # elm.add_child(div(".round")(round_children))
             elm.add_child(round_div)
 
-        print(elm.render())
+        # print(elm)
+        # print("test")
 
-        return self.t_bracket.render(body=elm.render())
+        return self.t_bracket.render(body=str(elm))
 
     def render_scoreboard(self) -> bytes:
 
@@ -283,4 +352,3 @@ class Renderer:
             mask_x4=inv_x4,
             mask_y4=inv_y4,
         )
-

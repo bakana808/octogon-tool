@@ -2,12 +2,15 @@ import sys
 import signal
 import traceback
 
-# from server import start_server, create_server
-from server import start_server, stop_server
+sys.path.append("./src/")
 
-from watcher import start_watcher
-from data import scoreboard
-from gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
+# from server import start_server, create_server
+from octogon.server import start_server, stop_server
+from octogon.lookup import characters
+
+from octogon.watcher import start_watcher
+from octogon.data import scoreboard
+from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
 import threading
 from multiprocessing import Process
 
@@ -52,43 +55,17 @@ class OctogonWidget(QMainWindow):
         self.sb_p1_name = SBTextWidget(wid, "P1 Name", key="p1.name")
         self.sb_p2_name = SBTextWidget(wid, "P2 Name", key="p2.name")
 
-        characters = [
-            "Bowser",
-            "Captain Falcon",
-            "Donkey Kong",
-            "Dr Mario",
-            "Falco",
-            "Fox",
-            "Ganondorf",
-            "Ice Climbers",
-            "Jigglypuff",
-            "Kirby",
-            "Link",
-            "Luigi",
-            "Mario",
-            "Marth",
-            "Mewtwo",
-            "Mr Game & Watch",
-            "Ness",
-            "Peach",
-            "Pichu",
-            "Pikachu",
-            "Roy",
-            "Samus",
-            "Yoshi",
-            "Young Link",
-            "Zelda",
-        ]
+        character_names = characters.values()
 
         self.sb_p1_char = SBDropdownWidget(
             wid, "Character", key="p1.character"
         )
-        self.sb_p1_char.edit.addItems(characters)
+        self.sb_p1_char.edit.addItems(character_names)
 
         self.sb_p2_char = SBDropdownWidget(
             wid, "Character", key="p2.character"
         )
-        self.sb_p2_char.edit.addItems(characters)
+        self.sb_p2_char.edit.addItems(character_names)
 
         # self.sb_p1_wins = QButtonGroup(self)
         self.sb_p1_wins = SBWinsWidget(self, "Wins", "p1.wins")

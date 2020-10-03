@@ -1,10 +1,13 @@
+import os
+import random
 from flask import Flask, request, send_from_directory
-from renderer.renderer import Renderer
+from octogon.renderer.renderer import Renderer
 
 # tournament / event ids to use
 
-smashgg_tournament_slug = "octo-gon-4"
-smashgg_event_id = 521088  # octo-gon 4 singles
+smashgg_tournament_slug = "octo-gon-5"
+smashgg_event_id = 522705  # octo-gon 5
+# smashgg_event_id = 521088  # octo-gon 4 singles
 # smashgg_event_id = 519066  # octo-gon 3 singles
 # smashgg_event_id = 517237  # octo-gon 2 singles
 
@@ -13,6 +16,8 @@ print(f"tournament: { smashgg_tournament_slug }")
 print(f"event: { smashgg_event_id }")
 
 app = Flask(__name__)
+app.config["CACHE_TYPE"] = "null"
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 renderer = Renderer()
 
 
@@ -50,6 +55,11 @@ def _smashgg_bracket():
     return renderer.render_bracket(smashgg_event_id)
 
 
+@app.route("/test-player")
+def _test_player():
+    return renderer.render_test_player()
+
+
 @app.route("/scoreboard")
 def _scoreboard():
     return renderer.render_scoreboard()
@@ -76,5 +86,8 @@ def _rotation():
 
 @app.route("/<path:path>", methods=["GET"])
 def _get_file(path):
-    return send_from_directory("../", path)
-
+    # _, ext = os.path.splitext(path)
+    # if ext == ".json":
+    # return send_from_directory("../", path, mimetype="text/json")
+    # print(f"cwd: {os.getcwd()}, path: {path}")
+    return send_from_directory(os.getcwd(), path, cache_timeout=0)
