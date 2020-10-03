@@ -17,6 +17,8 @@ this program currently features:
 - a scoreboard overlay
 - a scoreboard control GUI
 
+curious about how some of this stuff works? i've made some writeups on the wiki [here](https://github.com/branden-akana/octogon-panel/wiki/Interfaces).
+
 ## running
 
 requires Python 3.
