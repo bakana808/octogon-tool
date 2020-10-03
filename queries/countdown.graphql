@@ -1,7 +1,0 @@
-
-query TournamentQuery($slug: String) {
-
-    tournament(slug: $slug) {
-        startAt
-    }
-}

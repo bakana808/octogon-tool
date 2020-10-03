@@ -1,0 +1,17 @@
+
+# used to get an entrant ID from a player ID
+query EntrantQuery($event_id: ID!) {
+  event(id: $event_id) {
+    id
+    entrants {
+      nodes {
+        id
+        participants {
+          player {
+            id
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+
+query Entrant($id: ID!) {
+  entrant(id: $id) {
+    id
+    participants {
+      player {
+        id
+        gamerTag
+        name
+      }
+    }
+    standing {
+      stats {
+        score {
+          value
+        }
+      }
+    }
+  }
+}

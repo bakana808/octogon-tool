@@ -1,0 +1,32 @@
+
+# id: id of the player
+query Player($id: ID!) {
+  player(id: $id) {
+
+    id
+    gamerTag
+    prefix
+
+    sets(page: 1, perPage: 10) {
+      nodes {
+        fullRoundText
+        displayScore
+        event {
+          id
+        }
+        games {
+          selections {
+            entrant {
+              id
+            }
+            selectionType
+            selectionValue
+          }
+          stage {
+            id
+          }
+        }
+      }
+    }
+  }
+}
