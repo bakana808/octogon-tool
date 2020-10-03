@@ -6,27 +6,22 @@ super early stuff
 
 ![Preview Screenshot](preview.png)
 
-## features
+## what is this?
 
-###
+this is an all-purpose streaming tool for esports tournaments.
+while this was made for SSBM specifically, the codebase is being modeled such that supporting other games later is possible.
 
-- 
-### displays
+this program currently features:
 
-- smash.gg bracket: shows all upcoming matches
-- standings: shows the top 10 players in a tournament
-- countdown: shows a countdown timer to the start of a tournament
-- scoreboard: shows a scoreboard overlay used for tournament matches (in 4:3)
-
-
-
+- various smash.gg overlays
+- a scoreboard overlay
+- a scoreboard control GUI
 
 ## running
 
 requires Python 3.
 
-some displays require a smash.gg API key to be saved to a file named `dev-key.txt`
-to be able to query the smash.gg API for event and tournament information.
+the smash.gg overlays require a smash.gg API key in order to retrieve information. this key should be saved to a file named `dev-key.txt`.
 
 ```cmd
 pip install -r requirements.txt
@@ -37,16 +32,27 @@ serves to localhost at port 8000.
 
 ## usage
 
-intended for use with the "browser source" source in OBS:
-- connect to `localhost:8000` for a matchmaking display
-- connect to `localhost:8000/countdown` for a countdown display
-- connect to `localhost:8000/bracket` for a bracket display
-- connect to `localhost:8000/scoreboard` for a scoreboard display
+this program runs a server that serves HTML when connecting to certain paths. intended for use with the "browser source" source in OBS.
+
+current source URLs:
+```bash
+# scoreboard source (to be used with the background source)
+localhost:8000/scoreboard
+localhost:8000/background
+
+# smash.gg sources
+localhost:8000/standings
+localhost:8000/countdown
+localhost:8000/bracket
+```
 
 ## customization
 
-### custom layout/stylesheet
+### custom backgrounds
 
-HTML templates are located in `templates/` and the SCSS files used are located in `style/`.
+backgrounds can be added into the `assets/bgs/` folder. at this time, only `assets/bgs/1.png` is loaded.
 
-### custom 
+### custom html/stylesheet
+
+HTML templates are located in `templates/`, which are rendered using Jinja2 when serving overlays.
+SCSS files are used for styling, and can be found in `style/`. These files are rendered automatically when they are modified.
