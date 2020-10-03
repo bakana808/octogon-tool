@@ -17,7 +17,7 @@ this program currently features:
 - a scoreboard overlay
 - a scoreboard control GUI
 
-curious about how some of this stuff works? i've made some writeups on the wiki [here](https://github.com/branden-akana/octogon-panel/wiki/Interfaces).
+curious about how some of this stuff works? i've made some writeups on the wiki [here](https://github.com/branden-akana/octogon-panel/wiki/Utility-Code-&-Challenges).
 
 ## running
 
@@ -58,3 +58,14 @@ backgrounds can be added into the `assets/bgs/` folder. at this time, only `asse
 
 HTML templates are located in `templates/`, which are rendered using Jinja2 when serving overlays.
 SCSS files are used for styling, and can be found in `style/`. These files are rendered automatically when they are modified.
+
+## credits
+
+BG from the screenshot: [link](https://dangerdrop.tumblr.com/post/165399672305/%E6%9A%81-akatsuki-%E9%9F%BF-hibiki)
+
+Server made with `flask`
+GUI made with `pyqt5`
+HTML templating made with `jinja2`
+SCSS compiling made with `scss`
+
+and also, some GraphQL had to be written to interface with smash.gg's API.
