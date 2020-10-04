@@ -1,16 +1,14 @@
-from jinja2 import FileSystemLoader, Environment
 import os
-from collections import Counter
 import random
+from jinja2 import FileSystemLoader, Environment
+
+from octogon import config
 from octogon.api.smashgg import SmashAPI
 from octogon.api.smashgg.player import PlayerData
 from octogon.lookup import get_portrait_url
-
-# from renderer.html import div, span
 from octogon.web.tag import div, span
 
-TEMPLATE_PATH = "./templates/"
-_env = Environment(loader=FileSystemLoader(TEMPLATE_PATH))
+_env = Environment(loader=FileSystemLoader(config.TEMPLATE_PATH))
 
 
 class HTMLTemplate:
@@ -48,8 +46,8 @@ class Renderer:
 
         files = [
             f
-            for f in os.listdir(TEMPLATE_PATH)
-            if os.path.isfile(os.path.join(TEMPLATE_PATH, f))
+            for f in os.listdir(config.TEMPLATE_PATH)
+            if os.path.isfile(os.path.join(config.TEMPLATE_PATH, f))
         ]
 
         for filepath in files:

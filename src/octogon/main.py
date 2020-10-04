@@ -5,10 +5,9 @@ import traceback
 sys.path.append("./src/")
 
 # from server import start_server, create_server
-from octogon.server import start_server, stop_server
+from octogon.daemon.server import start_server, stop_server
+from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.lookup import characters
-
-from octogon.watcher import start_watcher
 from octogon.data import scoreboard
 from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
 import threading
@@ -145,22 +144,24 @@ class OctogonWidget(QMainWindow):
 def main():
 
     # server = create_server()
-    observer = start_watcher()
+    observer = SCSSAutoCompiler()
 
     try:
+        # configure QT window
         app = QApplication(sys.argv)
+        window = OctogonWidget()  # NOQA
 
-        window = OctogonWidget()
         # start server in another thread
-
         # thread = threading.Thread(target=start_server, args=(server,))
         thread = Process(target=start_server)
         thread.daemon = True
         thread.start()
 
-        watcher_thread = threading.Thread(target=observer.start)
-        watcher_thread.daemon = True
-        watcher_thread.start()
+        # start SCSS autocompiler
+        # watcher_thread = threading.Thread(target=observer.start)
+        # watcher_thread.daemon = True
+        # watcher_thread.start()
+        observer.start()
 
         app.exec_()
 
@@ -175,8 +176,8 @@ def main():
         thread.join()
         print("server has stopped.")
         observer.stop()
-        watcher_thread.join()
-        print("watcher has stopped.")
+        # watcher_thread.join()
+        print("scss compiler has stopped.")
 
 
 main()
