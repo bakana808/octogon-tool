@@ -1,5 +1,7 @@
 import json
-from octogon import config
+from octogon.config import SB_DATA_PATH, get_print_fn
+
+print = get_print_fn("scoreboard")
 
 
 class JsonData:
@@ -68,12 +70,12 @@ class ScoreboardData(JsonData):
     def load() -> dict:
         """Load the scoreboard JSON."""
         print("loading scoreboard JSON...")
-        return json.load(open(config.SB_DATA_PATH))
+        return json.load(open(SB_DATA_PATH))
 
     def save(self):
         print("saving scoreboard JSON...")
         print(self._json)
-        with open(config.SB_DATA_PATH, "w") as f:
+        with open(SB_DATA_PATH, "w") as f:
             json.dump(self._json, f, ensure_ascii=False, indent=4)
 
 

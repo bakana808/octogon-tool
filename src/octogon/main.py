@@ -5,6 +5,7 @@ import traceback
 sys.path.append("./src/")
 
 # from server import start_server, create_server
+from octogon.config import print
 from octogon.daemon.server import start_server, stop_server
 from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.lookup import characters

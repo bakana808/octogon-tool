@@ -2,15 +2,17 @@ import os
 from scss.compiler import Compiler
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
-from octogon import config
+from octogon.config import STYLE_PATH, get_print_fn
+
+print = get_print_fn("scss")
 
 
 class SCSSAutoCompiler(FileSystemEventHandler):
     def __init__(self):
         self.observer = Observer()
-        self.observer.schedule(self, path=config.STYLE_PATH, recursive=True)
+        self.observer.schedule(self, path=STYLE_PATH, recursive=True)
 
-        SCSSAutoCompiler.batch_compile(config.STYLE_PATH)
+        SCSSAutoCompiler.batch_compile(STYLE_PATH)
 
     def start(self) -> Observer:
         self.observer.setDaemon(True)

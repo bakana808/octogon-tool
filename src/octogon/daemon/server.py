@@ -1,7 +1,10 @@
 import os
-import random
+import logging
 from flask import Flask, request, send_from_directory
 from octogon.renderer.renderer import Renderer
+from octogon.config import get_print_fn
+
+print = get_print_fn("flask")
 
 # tournament / event ids to use
 
@@ -14,6 +17,9 @@ smashgg_event_id = 522705  # octo-gon 5
 print("currently using these ids for data queries:")
 print(f"tournament: { smashgg_tournament_slug }")
 print(f"event: { smashgg_event_id }")
+
+# disable info logging for flask
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 app = Flask(__name__)
 app.config["CACHE_TYPE"] = "null"

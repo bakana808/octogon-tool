@@ -6,8 +6,9 @@ from octogon.api.smashgg.tournament import TournamentData
 from octogon.api.smashgg.response import SmashggResponse
 from octogon.api.smashgg.player import PlayerData
 from octogon.api.smashgg.event import EventData
+from octogon.config import get_print_fn
 
-# functions for querying smash.gg API
+print = get_print_fn("smash.gg")
 
 
 class SmashAPI:

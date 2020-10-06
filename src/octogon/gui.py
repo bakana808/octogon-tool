@@ -1,6 +1,9 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QComboBox, QCheckBox
 
 from data import scoreboard
+from octogon.config import get_print_fn
+
+print = get_print_fn("qt")
 
 
 class SBWidgetPair:
