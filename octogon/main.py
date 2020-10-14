@@ -1,8 +1,5 @@
-import sys
 import signal
 import traceback
-
-sys.path.append("./src/")
 
 # from server import start_server, create_server
 from octogon.config import print
@@ -11,12 +8,17 @@ from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.lookup import characters
 from octogon.data import scoreboard
 from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
-import threading
 from multiprocessing import Process
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QAction,
+    qApp,
+    QStyleFactory,
+)
 from PyQt5.QtWidgets import (
     QLabel,
     QGridLayout,
@@ -149,7 +151,9 @@ def main():
 
     try:
         # configure QT window
-        app = QApplication(sys.argv)
+        app = QApplication([])
+        app.setStyle(QStyleFactory.create("GTK+"))
+
         window = OctogonWidget()  # NOQA
 
         # start server in another thread
@@ -179,6 +183,3 @@ def main():
         observer.stop()
         # watcher_thread.join()
         print("scss compiler has stopped.")
-
-
-main()
