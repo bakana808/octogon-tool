@@ -68,12 +68,16 @@ class Renderer:
 
         print("done!")
 
-    def render(self, template_name: str, **kwargs) -> str:
+    def render(self, template_name: str, *, auto_refresh=0, **kwargs) -> str:
         """
         Render a template by its name.
         """
 
-        return self.templates[template_name].render(**kwargs)
+        head = ""
+        if auto_refresh:
+            head = f'<meta http-equiv="refresh" content="{auto_refresh}" />'
+
+        return self.templates[template_name].render(head=head, **kwargs)
 
     def render_countdown(self, tournament_slug: str) -> bytes:
 
@@ -85,7 +89,7 @@ class Renderer:
 
         return self.t_countdown.render(timestamp=timestamp)
 
-    def render_standings(self, event_id) -> bytes:
+    def render_standings(self, event_id, auto_refresh=20) -> str:
 
         # XXX: below code used to calculate diff in placement
         # from the last time this function was called
@@ -112,7 +116,7 @@ class Renderer:
         # test for handling changing placements
         # random.shuffle(placements)
 
-        print(res)
+        # print(res)
 
         elm = div(".standings")
 
@@ -148,9 +152,9 @@ class Renderer:
 
             placement += 1
 
-        print(elm)
+        # print(elm)
 
-        return self.t_ladder.render(body=str(elm))
+        return self.render("ladder", auto_refresh=auto_refresh, body=str(elm))
 
     def render_player(
         self,
@@ -189,7 +193,7 @@ class Renderer:
             "player", body=entrant_tup[0], p0_bg=entrant_tup[1], p1_bg=""
         )
 
-    def render_bracket(self, event_id) -> str:
+    def render_bracket(self, event_id, auto_refresh=0) -> str:
 
         bracket = self.smashgg.get_event(event_id)
 
@@ -217,7 +221,7 @@ class Renderer:
                 if round_name == "Grand Final Reset":
                     continue
 
-                print(round_name)
+                # print(round_name)
 
                 # create a new round div
                 if round_name != last_round_name:
@@ -246,17 +250,33 @@ class Renderer:
                 for i, entrant in enumerate(s["slots"]):
 
                     if entrant["entrant"]:
-                        name = entrant["entrant"]["name"]
+                        # only get the first 11 characters
+                        name = entrant["entrant"]["name"][0:11]
                         id = entrant["entrant"]["id"]
-                        score = (
-                            entrant["standing"]["stats"]["score"]["value"] or 0
+                        try:
+                            score = entrant["standing"]["stats"]["score"][
+                                "value"
+                            ]
+                        except Exception:
+                            score = 0
+
+                        score = score or 0
+                        is_winner = id == winner_id
+
+                        player_classes = (
+                            ".player.winner" if is_winner else ".player"
+                        )
+
+                        set_div.add_child(
+                            span(player_classes)(
+                                span(".player-name")(name),
+                                span(".player-score")(score),
+                            )
                         )
                     else:  # placeholder entrant
-                        name = "?"
-                        id = None
-                        score = 0
-
-                    is_winner = id == winner_id
+                        set_div.add_child(
+                            span(".player")(span(".player-name")("-"))
+                        )
 
                     # append "vs" text
                     if i < len(s["slots"]) - 1:
@@ -274,7 +294,7 @@ class Renderer:
         # print(elm)
         # print("test")
 
-        return self.t_bracket.render(body=str(elm))
+        return self.render("bracket", auto_refresh=auto_refresh, body=str(elm))
 
     def render_scoreboard(self) -> bytes:
 

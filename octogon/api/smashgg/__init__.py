@@ -51,6 +51,8 @@ class SmashAPI:
         # get our query from our saved queries
         q = self.queries[name]
 
+        print(f'querying "{name}"...')
+
         return self.query_raw(q, **kwargs)
 
     def query_raw(self, q, **kwargs):
@@ -139,4 +141,5 @@ class SmashAPI:
         def query():
             return EventData(self.query("bracket", id=event_id), self)
 
-        return self.event_cache.get_or_default(event_id, query)
+        return query()
+        # return self.event_cache.get_or_default(event_id, query)
