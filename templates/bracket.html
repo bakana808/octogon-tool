@@ -2,11 +2,15 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta http-equiv="refresh" content="20" />
 		<title>title</title>
+		{{
+			head
+		}}
 		<link rel="stylesheet" href="style/style.css" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src="script.js"></script>
+		<script src="script.js">
+			{{ style }}
+		</script>
 	</head>
 	<body>
 		<div class="title">Upcoming Matches</div>

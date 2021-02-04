@@ -1,12 +1,38 @@
 @import "variables.scss";
 @import "scoreboard.scss";
 
-// =====================================================================================
+html {
+	font-size: 0;
+}
 
 body {
 	@include font_name;
 	color: white;
 }
+// =====================================================================================
+//  spotify rules
+// =====================================================================================
+
+#spotify {
+	display: block;
+	height: 40px;
+
+	.sp_icon {
+		width: 40px;
+		font-size: 20pt;
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	.sp_title {
+		@include font_h1;
+		height: 100%;
+		display: inline-block;
+		line-height: 10pt;
+		vertical-align: center;
+	}
+}
+// =====================================================================================
 
 /* bracket matches */
 
@@ -96,12 +122,35 @@ body {
 
 	margin-top: 10px;
 
-	background-color: $bg_dark;
+	background-color: $bg_light;
 	border-radius: 15px;
 
 	font-size: 12pt;
 	text-align: center;
 	line-height: 30px;
+}
+
+.player-name {
+	@include font_h1;
+	box-sizing: border-box;
+
+	//color: $fg_dark;
+	//background: $bg_solid;
+
+	//font-size: 14pt;
+	font-weight: bolder;
+	letter-spacing: 2px;
+	text-shadow: none;
+	height: 40px;
+	line-height: 36px;
+}
+
+#player0 > .player-name {
+	color: #c45d5d;
+}
+
+#player1 > .player-name {
+	color: #446fa7;
 }
 
 .player.winner {
@@ -111,13 +160,6 @@ body {
 	font-weight: bolder;
 }
 
-.player-name {
-	display: inline-block;
-	width: 80%;
-	margin: none;
-	overflow: hidden;
-	vertical-align: top;
-}
 .player-score {
 	display: inline-block;
 	width: 15%;
@@ -134,9 +176,24 @@ body {
 /* ladder standings */
 
 .standings {
-	/*margin-top: 40px;*/
-	/*margin-left: 40px;*/
 	mix-blend-mode: color-dodge;
+	animation: fadein 20s;
+	animation-fill-mode: both;
+}
+
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
 }
 
 .place {
@@ -216,4 +273,3 @@ body {
 
 	text-align: center;
 }
-
