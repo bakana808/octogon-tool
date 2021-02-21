@@ -53,5 +53,5 @@ STYLE_PATH = os.path.join(cwd, "style/")
 TEMPLATE_PATH = os.path.join(cwd, "templates/")
 
 # location of scoreboard data
-# SB_DATA_PATH = "output/sb_data.json"
-SB_DATA_PATH = os.path.join(cwd, "output/sb_data_new.json")
+SB_DATA_PATH = "output/sb_data.json"
+# SB_DATA_PATH = os.path.join(cwd, "output/sb_data_new.json")
