@@ -62,6 +62,31 @@ class JsonData:
 
 
 class ScoreboardData(JsonData):
+    """
+    A reference to the JSON file containing
+    scoreboard data.
+    """
+    DEFAULT = {
+        "round_title": "Round 1",
+        "round_games": "3",
+        "p1": {
+            "tag": "",
+            "name": "Player 1",
+            "color": 0,
+            "wins": 0,
+            "character": "Captain Falcon",
+            "skin": 0
+        },
+        "p2": {
+            "tag": "",
+            "name": "Player 2",
+            "color": 0,
+            "wins": 0,
+            "character": "Fox",
+            "skin": 0
+        }
+    }
+
     def __init__(self):
         json = ScoreboardData.load()
         super().__init__(json, True)
@@ -70,7 +95,17 @@ class ScoreboardData(JsonData):
     def load() -> dict:
         """Load the scoreboard JSON."""
         print("loading scoreboard JSON...")
-        return json.load(open(SB_DATA_PATH))
+
+        # try to read the scoreboard file or create a new one
+        try:
+            data = json.load(open(SB_DATA_PATH))
+        except FileNotFoundError:
+            print(f"loading default SB data")
+            data = ScoreboardData.DEFAULT
+
+        print(f"loaded scoreboard data: {data}")
+
+        return data
 
     def save(self):
         print("saving scoreboard JSON...")
