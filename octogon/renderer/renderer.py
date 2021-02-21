@@ -64,7 +64,12 @@ class Renderer:
         self.t_mask = HTMLTemplate("mask.svg")
         self.t_background = HTMLTemplate("background.html")
 
-        self.smashgg = SmashAPI()
+        # attempt to init the smashgg API
+        # which can fail if there is no dev key
+        try:
+            self.smashgg = SmashAPI()
+        except FileNotFoundError:
+            self.smashgg = None
 
         print("done!")
 
