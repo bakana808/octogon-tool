@@ -59,17 +59,16 @@ class OctogonWidget(QMainWindow):
         self.sb_p2_name = SBTextWidget(wid, "P2 Name", key="p2.name")
 
         # characters chosen
-        character_names = characters.values()
+        character_names = list(characters.values())
+        print(character_names)
 
         self.sb_p1_char = SBDropdownWidget(
-            wid, "Character", key="p1.character"
+            wid, "Character", key="p1.character", items=character_names
         )
-        self.sb_p1_char.edit.addItems(character_names)
 
         self.sb_p2_char = SBDropdownWidget(
-            wid, "Character", key="p2.character"
+            wid, "Character", key="p2.character", items=character_names
         )
-        self.sb_p2_char.edit.addItems(character_names)
 
         # number of wins per player
         # self.sb_p1_wins = QButtonGroup(self)
@@ -80,8 +79,7 @@ class OctogonWidget(QMainWindow):
         self.sb_round_title = SBTextWidget(self, "Round Title", "round_title")
 
         # best of 3/5
-        self.sb_round_games = SBDropdownWidget(self, "Best of", "round_games")
-        self.sb_round_games.edit.addItems(["3", "5"])
+        self.sb_round_games = SBDropdownWidget(self, "Best of", "round_games", ["3", "5"])
 
         self.sb_update_bt = QPushButton("Update")
         self.sb_update_bt.clicked.connect(scoreboard.save)

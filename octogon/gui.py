@@ -30,10 +30,12 @@ class SBTextWidget(SBWidgetPair):
 
 
 class SBDropdownWidget(SBWidgetPair):
-    def __init__(self, parent, name: str, key: str):
+    def __init__(self, parent, name: str, key: str, items: list):
         super().__init__(parent, name, key)
 
         self.edit = QComboBox(parent)
+        self.edit.addItems(items)
+        self.edit.setCurrentText(scoreboard[self.key])
         self.edit.currentIndexChanged.connect(self.on_edited)
 
     def on_edited(self):
