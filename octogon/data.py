@@ -107,7 +107,7 @@ class ScoreboardData(JsonData):
             with open(config.SB_DATA_PATH, "w") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-        print(f"loaded scoreboard data: {data}")
+        print("loaded scoreboard data!")
 
         return data
 
@@ -115,7 +115,6 @@ class ScoreboardData(JsonData):
         print("saving scoreboard JSON...")
         config = octogon.config.config
 
-        print(self._json)
         with open(config.SB_DATA_PATH, "w") as f:
             json.dump(self._json, f, ensure_ascii=False, indent=4)
 

@@ -64,7 +64,6 @@ class OctogonWidget(QMainWindow):
 
         # characters chosen
         character_names = list(characters.values())
-        print(character_names)
 
         self.sb_p1_char = SBDropdownWidget(
             wid, "Character", key="p1.character", items=character_names
