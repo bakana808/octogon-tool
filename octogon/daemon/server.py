@@ -4,9 +4,9 @@ from octogon.api.spotify import spotify_get_song, spotify_get_artist
 from octogon.web.tag import div, span
 from flask import Flask, request, send_from_directory
 from octogon.renderer.renderer import Renderer
-from octogon.config import get_print_fn
+import octogon.config
 
-print = get_print_fn("flask")
+print = octogon.config.get_print_fn("flask")
 
 # tournament / event ids to use
 
@@ -19,20 +19,24 @@ smashgg_event_id = 532752  # octo-gon 8
 # smashgg_event_id = 519066  # octo-gon 3 singles
 # smashgg_event_id = 517237  # octo-gon 2 singles
 
-print("currently using these ids for data queries:")
-print(f"tournament: { smashgg_tournament_slug }")
-print(f"event: { smashgg_event_id }")
-
 # disable info logging for flask
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 app = Flask(__name__)
 app.config["CACHE_TYPE"] = "null"
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
-renderer = Renderer()
+renderer = None
 
 
 def start_server():
+    config = octogon.config.config
+
+    print("currently using these ids for data queries:")
+    print(f"tournament: { config.SMASHGG_TOURNY_SLUG }")
+    print(f"event: { config.SMASHGG_EVENT_ID }")
+
+    global renderer
+    renderer = Renderer()
     app.run(debug=True, use_reloader=False, port=8000)
 
 
@@ -99,14 +103,10 @@ def _rotation():
     auto_refresh = 20
     if current == 0:
         current += 1
-        return renderer.render_bracket(
-            smashgg_event_id, auto_refresh=auto_refresh
-        )
+        return renderer.render_bracket(smashgg_event_id, auto_refresh=auto_refresh)
     elif current == 1:
         current = 0
-        return renderer.render_standings(
-            smashgg_event_id, auto_refresh=auto_refresh
-        )
+        return renderer.render_standings(smashgg_event_id, auto_refresh=auto_refresh)
 
 
 @app.route("/<path:path>", methods=["GET"])

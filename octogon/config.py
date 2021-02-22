@@ -2,7 +2,9 @@
 Octogon Panel Constants
 """
 import os
+import json
 import logging
+from typing import Optional
 from colorama import Fore, Style
 
 cwd = os.getcwd()
@@ -46,12 +48,49 @@ def get_print_fn(name):
 print = get_print_fn("octogon")
 
 
-# location of .scss files
-STYLE_PATH = os.path.join(cwd, "style/")
+CONFIG_PATH = "config.json"
 
-# location of jinja2 templates
-TEMPLATE_PATH = os.path.join(cwd, "templates/")
 
-# location of scoreboard data
-SB_DATA_PATH = "output/sb_data.json"
-# SB_DATA_PATH = os.path.join(cwd, "output/sb_data_new.json")
+def load_config():
+    """Load constants from the config file."""
+
+    print("loading config...")
+    try:
+        conf = json.load(open(CONFIG_PATH))
+    except FileNotFoundError:
+        # write a default config
+        conf = {
+            "style_path": "style/",
+            "template_path": "templates/",
+            "sb_path": "scoreboard.json",
+            "smashgg_api_key": "",
+            "smashgg_tourny_slug": "",
+            "smashgg_event_id": "",
+        }
+        with open(CONFIG_PATH, "w") as f:
+            json.dump(conf, f, ensure_ascii=False, indent=4)
+            print("created default config")
+
+    print("config loaded!")
+
+    global config
+    config = Config(conf)
+
+
+class Config:
+    def __init__(self, data: dict):
+        self.data = data
+
+        # location of .scss files
+        self.STYLE_PATH = data["style_path"]
+        # location of jinja2 templates
+        self.TEMPLATE_PATH = data["template_path"]
+        # location of scoreboard data
+        self.SB_DATA_PATH = data["sb_path"]
+
+        self.SMASHGG_API_KEY = data["smashgg_api_key"]
+        self.SMASHGG_TOURNY_SLUG = data["smashgg_tourny_slug"]
+        self.SMASHGG_EVENT_ID = data["smashgg_event_id"]
+
+
+config: Optional[Config] = None

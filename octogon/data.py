@@ -1,7 +1,7 @@
 import json
-from octogon.config import SB_DATA_PATH, get_print_fn
+import octogon.config
 
-print = get_print_fn("scoreboard")
+print = octogon.config.get_print_fn("scoreboard")
 
 
 class JsonData:
@@ -66,6 +66,7 @@ class ScoreboardData(JsonData):
     A reference to the JSON file containing
     scoreboard data.
     """
+
     DEFAULT = {
         "round_title": "Round 1",
         "round_games": "3",
@@ -75,7 +76,7 @@ class ScoreboardData(JsonData):
             "color": 0,
             "wins": 0,
             "character": "Captain Falcon",
-            "skin": 0
+            "skin": 0,
         },
         "p2": {
             "tag": "",
@@ -83,8 +84,8 @@ class ScoreboardData(JsonData):
             "color": 0,
             "wins": 0,
             "character": "Fox",
-            "skin": 0
-        }
+            "skin": 0,
+        },
     }
 
     def __init__(self):
@@ -95,12 +96,13 @@ class ScoreboardData(JsonData):
     def load() -> dict:
         """Load the scoreboard JSON."""
         print("loading scoreboard JSON...")
+        config = octogon.config.config
 
         # try to read the scoreboard file or create a new one
         try:
-            data = json.load(open(SB_DATA_PATH))
+            data = json.load(open(config.SB_DATA_PATH))
         except FileNotFoundError:
-            print(f"loading default SB data")
+            print("loading default SB data")
             data = ScoreboardData.DEFAULT
 
         print(f"loaded scoreboard data: {data}")
@@ -109,9 +111,16 @@ class ScoreboardData(JsonData):
 
     def save(self):
         print("saving scoreboard JSON...")
+        config = octogon.config.config
+
         print(self._json)
-        with open(SB_DATA_PATH, "w") as f:
+        with open(config.SB_DATA_PATH, "w") as f:
             json.dump(self._json, f, ensure_ascii=False, indent=4)
 
 
-scoreboard = ScoreboardData()
+scoreboard = None
+
+
+def init_scoreboard():
+    global scoreboard
+    scoreboard = ScoreboardData()

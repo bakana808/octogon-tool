@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QComboBox, QCheckBox
 
-from octogon.data import scoreboard
+import octogon.data as data
 from octogon.config import get_print_fn
 
 print = get_print_fn("qt")
@@ -21,12 +21,12 @@ class SBTextWidget(SBWidgetPair):
         super().__init__(parent, name, key)
 
         self.edit = QLineEdit(parent)
-        self.edit.setText(scoreboard[key])
+        self.edit.setText(data.scoreboard[key])
         self.edit.textChanged.connect(self.on_edited)
 
     def on_edited(self):
         print("updating sb data")
-        scoreboard[self.key] = self.edit.text()
+        data.scoreboard[self.key] = self.edit.text()
 
 
 class SBDropdownWidget(SBWidgetPair):
@@ -35,12 +35,12 @@ class SBDropdownWidget(SBWidgetPair):
 
         self.edit = QComboBox(parent)
         self.edit.addItems(items)
-        self.edit.setCurrentText(scoreboard[self.key])
+        self.edit.setCurrentText(data.scoreboard[self.key])
         self.edit.currentIndexChanged.connect(self.on_edited)
 
     def on_edited(self):
         print("updating sb data")
-        scoreboard[self.key] = self.edit.currentText()
+        data.scoreboard[self.key] = self.edit.currentText()
 
 
 class SBWinsWidget(SBWidgetPair):
@@ -62,4 +62,4 @@ class SBWinsWidget(SBWidgetPair):
             if btn.isChecked():
                 wins += 1
 
-        scoreboard[self.key] = wins
+        data.scoreboard[self.key] = wins

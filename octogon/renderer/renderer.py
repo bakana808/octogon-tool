@@ -1,15 +1,15 @@
 import os
 import random
-from jinja2 import FileSystemLoader, Environment
 
-from octogon.config import get_print_fn, TEMPLATE_PATH
+from jinja2 import Environment, FileSystemLoader
+
+import octogon.config
 from octogon.api.smashgg import SmashAPI
 from octogon.api.smashgg.player import PlayerData
 from octogon.lookup import get_portrait_url
 from octogon.web.tag import div, span
 
-_env = Environment(loader=FileSystemLoader(TEMPLATE_PATH))
-print = get_print_fn("web")
+print = octogon.config.get_print_fn("web")
 
 
 class HTMLTemplate:
@@ -17,10 +17,10 @@ class HTMLTemplate:
     An HTML template used to serve a browser source.
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, env: Environment):
 
         # the Jinja template
-        self.template = _env.get_template(path)
+        self.template = env.get_template(path)
 
     def render(self, **kwargs) -> str:
         """
@@ -43,26 +43,18 @@ class Renderer:
 
         print("loading HTML templates...")
 
+        config = octogon.config.config
+        path = config.TEMPLATE_PATH
+        self.env = Environment(loader=FileSystemLoader(path))
         self.templates = {}
 
-        files = [
-            f
-            for f in os.listdir(TEMPLATE_PATH)
-            if os.path.isfile(os.path.join(TEMPLATE_PATH, f))
-        ]
+        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
         for filepath in files:
             name = os.path.splitext(os.path.basename(filepath))[0]
-            template = HTMLTemplate(filepath)
+            template = HTMLTemplate(filepath, self.env)
             self.templates[name] = template
             print(f"loaded template '{ name }' ({filepath})")
-
-        self.t_ladder = HTMLTemplate("ladder.html")
-        self.t_countdown = HTMLTemplate("countdown.html")
-        self.t_bracket = HTMLTemplate("bracket.html")
-        self.t_scoreboard = HTMLTemplate("scoreboard.html")
-        self.t_mask = HTMLTemplate("mask.svg")
-        self.t_background = HTMLTemplate("background.html")
 
         # attempt to init the smashgg API
         # which can fail if there is no dev key
@@ -92,7 +84,7 @@ class Renderer:
 
         print(f"tournament starts at {timestamp}")
 
-        return self.t_countdown.render(timestamp=timestamp)
+        return self.render("countdown", timestamp=timestamp)
 
     def render_standings(self, event_id, auto_refresh=20) -> str:
 
@@ -110,9 +102,7 @@ class Renderer:
 
         #     return last_placement - placement
 
-        res = self.smashgg.query(
-            "standings", eventId=event_id, page=1, perPage=10
-        )
+        res = self.smashgg.query("standings", eventId=event_id, page=1, perPage=10)
 
         placements = res["data"]["event"]["standings"]["nodes"]
         if not placements:
@@ -147,9 +137,7 @@ class Renderer:
 
             elm.add_child(
                 div(".place")(
-                    div(".placement-wrapper")(
-                        span(placement_classes)(placement)
-                    ),
+                    div(".placement-wrapper")(span(placement_classes)(placement)),
                     # div(class_=f"delta {css_class}")(delta)
                     span(".name")(entrant),
                 )
@@ -207,9 +195,7 @@ class Renderer:
         sets = bracket.get_sets()
 
         if sets is None or len(sets) == 0:  # no matches were found
-            elm.add_child(
-                div(".message")("Waiting for the upcoming matches...")
-            )
+            elm.add_child(div(".message")("Waiting for the upcoming matches..."))
             print("rendering entrant")
 
         else:  # go through the matches
@@ -237,9 +223,7 @@ class Renderer:
                     round_div = div(".round")
                     round_div.add_child(
                         # round_children.append(
-                        span(".round-name")(
-                            f"{round_name} · Best of {round_games}"
-                        )
+                        span(".round-name")(f"{round_name} · Best of {round_games}")
                     )
 
                 set_div = div(".set")
@@ -259,18 +243,14 @@ class Renderer:
                         name = entrant["entrant"]["name"][0:11]
                         id = entrant["entrant"]["id"]
                         try:
-                            score = entrant["standing"]["stats"]["score"][
-                                "value"
-                            ]
+                            score = entrant["standing"]["stats"]["score"]["value"]
                         except Exception:
                             score = 0
 
                         score = score or 0
                         is_winner = id == winner_id
 
-                        player_classes = (
-                            ".player.winner" if is_winner else ".player"
-                        )
+                        player_classes = ".player.winner" if is_winner else ".player"
 
                         set_div.add_child(
                             span(player_classes)(
@@ -279,9 +259,7 @@ class Renderer:
                             )
                         )
                     else:  # placeholder entrant
-                        set_div.add_child(
-                            span(".player")(span(".player-name")("-"))
-                        )
+                        set_div.add_child(span(".player")(span(".player-name")("-")))
 
                     # append "vs" text
                     if i < len(s["slots"]) - 1:
@@ -302,8 +280,7 @@ class Renderer:
         return self.render("bracket", auto_refresh=auto_refresh, body=str(elm))
 
     def render_scoreboard(self) -> bytes:
-
-        return self.t_scoreboard.render()
+        return self.render("scoreboard")
 
     def render_background(self) -> str:
 
@@ -314,7 +291,7 @@ class Renderer:
         with open("output/mask.svg", "w") as f:
             f.write(mask_src)
 
-        return self.t_background.render(bg_path=bg_path)
+        return self.render("background", bg_path=bg_path)
 
     def render_mask(self) -> str:
         """
@@ -362,7 +339,8 @@ class Renderer:
         inv_y4 = inv_h3 + height
 
         # render the mask SVG
-        return self.t_mask.render(
+        return self.render(
+            "mask",
             mask_h=inv_h,
             mask_w=inv_w,
             mask_x=inv_x,

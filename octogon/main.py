@@ -2,11 +2,11 @@ import signal
 import traceback
 
 # from server import start_server, create_server
-from octogon.config import print
+import octogon.config
+import octogon.data as data
 from octogon.daemon.server import start_server, stop_server
 from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.lookup import characters
-from octogon.data import scoreboard
 from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
 from multiprocessing import Process
 
@@ -32,6 +32,8 @@ from PyQt5.QtWidgets import (
     QCheckBox,
 )
 
+print = octogon.config.print
+
 # allows program to exit with CTRL+C
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -41,6 +43,8 @@ class OctogonWidget(QMainWindow):
         super().__init__()
 
         # layout
+
+        scoreboard = data.scoreboard
 
         wid = QWidget(self)
         self.setCentralWidget(wid)
@@ -79,7 +83,9 @@ class OctogonWidget(QMainWindow):
         self.sb_round_title = SBTextWidget(self, "Round Title", "round_title")
 
         # best of 3/5
-        self.sb_round_games = SBDropdownWidget(self, "Best of", "round_games", ["3", "5"])
+        self.sb_round_games = SBDropdownWidget(
+            self, "Best of", "round_games", ["3", "5"]
+        )
 
         self.sb_update_bt = QPushButton("Update")
         self.sb_update_bt.clicked.connect(scoreboard.save)
@@ -181,8 +187,12 @@ def main():
     try:
         # configure QT window
         app = QApplication([])
-        app.setStyle(QStyleFactory.create("GTK+"))
+        # app.setStyle(QStyleFactory.create("GTK+"))
 
+        # load scoreboard
+        data.init_scoreboard()
+
+        # create main window
         window = OctogonWidget()  # NOQA
 
         # start server in another thread
