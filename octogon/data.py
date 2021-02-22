@@ -89,11 +89,10 @@ class ScoreboardData(JsonData):
     }
 
     def __init__(self):
-        json = ScoreboardData.load()
+        json = self.load()
         super().__init__(json, True)
 
-    @staticmethod
-    def load() -> dict:
+    def load(self) -> dict:
         """Load the scoreboard JSON."""
         print("loading scoreboard JSON...")
         config = octogon.config.config
@@ -104,6 +103,9 @@ class ScoreboardData(JsonData):
         except FileNotFoundError:
             print("loading default SB data")
             data = ScoreboardData.DEFAULT
+            # write the default scoreboard data
+            with open(config.SB_DATA_PATH, "w") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
 
         print(f"loaded scoreboard data: {data}")
 
