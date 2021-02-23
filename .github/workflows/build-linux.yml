@@ -23,9 +23,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
       # Runs a single command using the runners shell
       - name: Build executable
         run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+          sudo apt-get update
+          sudo apt-get -y install libc-bin binutils zip
           pyinstaller build.spec
 
       # Runs a set of commands using the runners shell
