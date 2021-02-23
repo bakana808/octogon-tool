@@ -5,7 +5,7 @@
 const update_interval = 2000;
 
 // path to the json containing scoreboard data
-const sb_path = "/output/sb_data.json";
+const sb_path = "scoreboard.json";
 
 // stores the last read scoreboard data, used to check for changes
 var sb_data = null;
