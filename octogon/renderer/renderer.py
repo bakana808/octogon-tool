@@ -56,12 +56,8 @@ class Renderer:
             self.templates[name] = template
             print(f"loaded template '{ name }' ({filepath})")
 
-        # attempt to init the smashgg API
-        # which can fail if there is no dev key
-        try:
-            self.smashgg = SmashAPI()
-        except FileNotFoundError:
-            self.smashgg = None
+        # the smash.gg object to use for API integration
+        self.smashgg = SmashAPI()
 
         print("done!")
 

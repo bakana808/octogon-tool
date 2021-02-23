@@ -2,6 +2,7 @@ import json
 import os
 import requests
 from octogon.util import defaultdict
+import octogon.config
 from octogon.api.smashgg.tournament import TournamentData
 from octogon.api.smashgg.response import SmashggResponse
 from octogon.api.smashgg.player import PlayerData
@@ -16,6 +17,8 @@ class SmashAPI:
     PATH: str = "queries/"
 
     def __init__(self):
+
+        config = octogon.config.config
 
         self.queries = {}
 
@@ -34,8 +37,7 @@ class SmashAPI:
 
         print("loading API key...")
 
-        with open("dev-key.txt", "r") as f:
-            self.api_key = f.read().strip()
+        self.api_key = config.SMASHGG_API_KEY
 
         # cache mappings
 
@@ -68,13 +70,9 @@ class SmashAPI:
         r = requests.post(url=url, json=j, headers=headers)
         return json.loads(r.text)
 
-    def query_standings(
-        self, event_id, page=1, per_page=10
-    ) -> SmashggResponse:
+    def query_standings(self, event_id, page=1, per_page=10) -> SmashggResponse:
 
-        res = self.query(
-            "standings", eventId=event_id, page=page, perPage=per_page
-        )
+        res = self.query("standings", eventId=event_id, page=page, perPage=per_page)
         return SmashggResponse(res, "event", self)
 
     def get_player(self, player_id) -> PlayerData:
