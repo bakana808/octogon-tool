@@ -8,58 +8,106 @@ super early stuff
 
 ## what is this?
 
-this is an all-purpose streaming tool for esports tournaments.
+This is an all-purpose streaming tool for esports tournaments.
 while this was made for SSBM specifically, the codebase is being modeled such that supporting other games later is possible.
 
-this program currently features:
+Current features:
 
-- various smash.gg overlays
-- a scoreboard overlay
-- a scoreboard control GUI
+- A scoreboard control GUI and overlays
+- Smash.gg overlays
+- Spotify overlays
 
-curious about how some of this stuff works? i've made some writeups on the wiki [here](https://github.com/branden-akana/octogon-panel/wiki/Utility-Code-&-Challenges).
+## Downloads
 
-## running
+Linux builds can be found on the [latest release](https://github.com/branden-akana/octogon-panel/releases).
 
-requires Python 3.
+For other platforms, see the [Running](https://github.com/branden-akana/octogon-panel#Running) section for instructions on how to build and run Octogon.
 
-the smash.gg overlays require a smash.gg API key in order to retrieve information. this key should be saved to a file named `dev-key.txt`.
+## Running
 
-```cmd
-pip install -r requirements.txt
-python src/main.py
-```
+### Setup
 
-serves to localhost at port 8000.
+1. Install [Python 3](https://www.python.org/downloads/).
+2. `git clone` this repository to a folder, or click the "Code" button on the top of this page, click "Download ZIP", and extract it to a folder.
+3. Open a terminal in the folder (on Windows Explorer, Alt+D and type `cmd` in the address bar of the window).
+4. Run `pip install -r requirements.txt`
 
-## usage
+Then, to run the program run `python main.py`.
 
-this program runs a server that serves HTML when connecting to certain paths. intended for use with the "browser source" source in OBS.
+## Configuration
 
-current source URLs:
+A `config.json` file will be created when this program is first run.
+In this config you'll find a few options that are left blank.
+You must set these manually for the Smash.gg integration to work.
+
+`smashgg_api_key`: an API key required by Smash.gg to retrieve information from their servers.
+You can create an API key through Smash.gg [here](https://smash.gg/admin/profile/developer).
+`smashgg_tourny_slug`: the ID of your tournament from your Smash.gg tournament page.
+For example, if the link to my tournament is `https://smash.gg/tournament/octo-gon-8`, then the slug is `octo-gon-8`.
+This is used to retrieve the start date and time for the countdown layout.
+`smashgg_event_id`: the ID of the event to retrieve bracket and standing information from.
+You can find this by going into the settings for an event on Smash.gg.
+For example, if the settings page for my event is `https://smash.gg/admin/tournament/octo-gon-8/event-edit/532752`, then the ID is `532752`.
+
+To reload the configuration, please close and re-open the program.
+
+## Usage
+
+### 1. Adding layouts to OBS
+This program runs a server that serves HTML pages when connecting to certain URLs.
+This is intended for use with the "Browser" source in OBS.
+![Browser Source](https://i.imgur.com/647Mi2q.png)
+
+Be default, this program serves webpages to `localhost:8000`.
+
+Example source URLs:
 ```bash
 # scoreboard source (to be used with the background source)
+# recommended size: 1920x1080
 localhost:8000/scoreboard
-localhost:8000/background
+localhost:8000/background  # includes a mask cutout for gameplay capture
 
 # smash.gg sources
+# recommended size: 500x1080 (can adjust for wider or narrower display)
 localhost:8000/standings
 localhost:8000/countdown
 localhost:8000/bracket
+
+# spotify source (shows the current song and artist if playing music on Spotify)
+# recommended size: 1920x100 (can adjust to make narrower, note the text might get cut off)
+localhost:8000/spotify
 ```
+The most up-to-date list of sources can be found in [server.py](https://github.com/branden-akana/octogon-panel/blob/master/octogon/daemon/server.py)
 
-## customization
+### 2. Controlling the Scoreboard
 
-### custom backgrounds
+When run, you will see a window containing scoreboard controls.
+![Octogon Panel](https://i.imgur.com/IpyzLm1.png)
 
-backgrounds can be added into the `assets/bgs/` folder. at this time, only `assets/bgs/1.png` is loaded.
+Edit the information on the window, then update the scoreboard overlay by clicking "Update".
 
-### custom html/stylesheet
+Note that the Smash.gg settings on the bottom of the window currently don't do anything.
+
+### 3. Customizing
+
+(Please note that the folder/file names are WIPs and may change at any time.)
+
+### Backgrounds
+
+Backgrounds can be added into the `assets/bgs/` folder. At this time, only `assets/bgs/1.png` is loaded.
+
+### HTML/CSS
 
 HTML templates are located in `templates/`, which are rendered using Jinja2 when serving overlays.
 SCSS files are used for styling, and can be found in `style/`. These files are rendered automatically when they are modified.
 
-## credits
+### Character Portraits
+
+Character portraits can be found in `assets/portraits/`.
+These can be changed as long as they use the same filenames, however note that currently only the
+default color (`Default.png`) is used.
+
+## Credits
 
 BG from the screenshot: [link](https://dangerdrop.tumblr.com/post/165399672305/%E6%9A%81-akatsuki-%E9%9F%BF-hibiki)
 
