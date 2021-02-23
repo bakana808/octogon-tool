@@ -92,20 +92,27 @@ Note that the Smash.gg settings on the bottom of the window currently don't do a
 
 (Please note that the folder/file names are WIPs and may change at any time.)
 
-### Backgrounds
+#### Backgrounds
 
 Backgrounds can be added into the `assets/bgs/` folder. At this time, only `assets/bgs/1.png` is loaded.
 
-### HTML/CSS
+#### HTML/CSS
 
 HTML templates are located in `templates/`, which are rendered using Jinja2 when serving overlays.
 SCSS files are used for styling, and can be found in `style/`. These files are rendered automatically when they are modified.
 
-### Character Portraits
+#### Character Portraits
 
 Character portraits can be found in `assets/portraits/`.
 These can be changed as long as they use the same filenames, however note that currently only the
 default color (`Default.png`) is used.
+
+### 4. Troubleshooting
+
+Having trouble with the app? Check the [Troubleshooting](https://github.com/branden-akana/octogon-panel/wiki/Troubleshooting-&-FAQ) page
+to see if your problem is listed there.
+
+If not, feel free to open an issue explaining the problem.
 
 ## Credits
 
