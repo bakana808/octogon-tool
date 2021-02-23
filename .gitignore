@@ -2,3 +2,5 @@ dev-key.txt
 *.css
 __pycache__/
 output/
+build/
+dist/
