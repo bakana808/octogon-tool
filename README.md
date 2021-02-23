@@ -41,10 +41,10 @@ In this config you'll find a few options that are left blank.
 You must set these manually for the Smash.gg integration to work.
 
 `smashgg_api_key`: an API key required by Smash.gg to retrieve information from their servers.
-You can create an API key through Smash.gg [here](https://smash.gg/admin/profile/developer).
+You can create an API key through Smash.gg [here](https://smash.gg/admin/profile/developer).\
 `smashgg_tourny_slug`: the ID of your tournament from your Smash.gg tournament page.
 For example, if the link to my tournament is `https://smash.gg/tournament/octo-gon-8`, then the slug is `octo-gon-8`.
-This is used to retrieve the start date and time for the countdown layout.
+This is used to retrieve the start date and time for the countdown layout.\
 `smashgg_event_id`: the ID of the event to retrieve bracket and standing information from.
 You can find this by going into the settings for an event on Smash.gg.
 For example, if the settings page for my event is `https://smash.gg/admin/tournament/octo-gon-8/event-edit/532752`, then the ID is `532752`.
@@ -111,9 +111,9 @@ default color (`Default.png`) is used.
 
 BG from the screenshot: [link](https://dangerdrop.tumblr.com/post/165399672305/%E6%9A%81-akatsuki-%E9%9F%BF-hibiki)
 
-Server made with `flask`
-GUI made with `pyqt5`
-HTML templating made with `jinja2`
-SCSS compiling made with `scss`
+Server made with `flask`\
+GUI made with `pyqt5`\
+HTML templating made with `jinja2`\
+SCSS compiling made with `scss`\
 
 and also, some GraphQL had to be written to interface with smash.gg's API.
