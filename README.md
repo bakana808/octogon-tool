@@ -5,6 +5,7 @@ Octogon Panel
 super early stuff
 
 ![Preview Screenshot](preview.png)
+![Preview Screenshot 2](https://i.imgur.com/ajhHyXb.jpg)
 
 ## what is this?
 
