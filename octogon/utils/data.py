@@ -1,11 +1,14 @@
-class JsonData:
-    """A JSON object returned by a web API."""
+class NestedDict:
+    """
+    A dictionary containing improved getter and setter functions
+    to easily access deeply nested keys.
+    """
 
-    def __init__(self, json: dict, is_writable=False):
+    def __init__(self, dictionary: dict, is_writable=False):
 
-        self._json = json
+        self.dictionary = dictionary
 
-        # if False, deny editing this json object
+        # if False, deny editing to this dictionary
         self.is_writable = is_writable
 
     def __getitem__(self, k: str):
@@ -22,11 +25,11 @@ class JsonData:
             data["a"]["b"]["c"]
 
         If the value is an instance of dict, then another instance of
-        JsonData is returned.
+        NestedDict is returned.
         """
 
         keys = k.split(".")
-        value = self._json
+        value = self.dictionary
         for key in keys:
             value = value[key]
 
@@ -34,7 +37,7 @@ class JsonData:
 
     def _convert_value(self, value):
         if isinstance(value, dict):
-            return JsonData(value, self.is_writable)
+            return NestedDict(value, self.is_writable)
         elif isinstance(value, list):
             return [self._convert_value(i) for i in value]
         else:
@@ -48,10 +51,10 @@ class JsonData:
         """Set a value in the json object"""
 
         if not self.is_writable:
-            raise RuntimeError("cannot modify this data, it is non-writable")
+            raise RuntimeError("cannot modify this dict, it is non-writable")
 
         keys = k.split(".")
-        ret = self._json
+        ret = self.dictionary
         for i, key in enumerate(keys):
             if i == len(keys) - 1:  # last elm
                 ret[key] = v

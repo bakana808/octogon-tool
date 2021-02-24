@@ -1,12 +1,12 @@
 import json
 
-from octogon.utils.data import JsonData
+from octogon.utils.data import NestedDict
 from octogon.utils.logger import get_print_fn
 
 print = get_print_fn("scoreboard")
 
 
-class ScoreboardData(JsonData):
+class ScoreboardData(NestedDict):
     """
     A reference to the JSON file containing
     scoreboard data.
@@ -35,8 +35,7 @@ class ScoreboardData(JsonData):
 
     def __init__(self, octogon):
         self.octogon = octogon
-        json = self.load()
-        super().__init__(json, True)
+        super().__init__(self.load(), True)
 
     def load(self) -> dict:
         """Load the scoreboard JSON."""
@@ -61,7 +60,7 @@ class ScoreboardData(JsonData):
         config = self.octogon.config
 
         with open(config.SB_DATA_PATH, "w") as f:
-            json.dump(self._json, f, ensure_ascii=False, indent=4)
+            json.dump(self.dictionary, f, ensure_ascii=False, indent=4)
             print("committed scoreboard changes")
 
     def on_data_changed(self, k, v):

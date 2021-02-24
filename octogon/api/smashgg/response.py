@@ -1,11 +1,11 @@
-from octogon.utils.data import JsonData
+from octogon.utils.data import NestedDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from octogon.api.smashgg import SmashAPI
 
 
-class SmashggResponse(JsonData):
+class SmashggResponse(NestedDict):
     """
     A response from Smash.gg's API
     """
@@ -32,4 +32,4 @@ class SmashggResponse(JsonData):
                 raise RuntimeError("data is empty")
 
     def print_data(self):
-        print(self._json)
+        print(self.dictionary)
