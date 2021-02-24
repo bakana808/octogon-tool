@@ -1,10 +1,11 @@
 import signal
+import sys
 
 import octogon.config
 import octogon.scoreboard
 from octogon.api.smashgg import SmashAPI
 from octogon.daemon.scss import SCSSAutoCompiler
-from octogon.main import start_gui_loop
+from octogon.gui.window import OctogonWidget
 from octogon.renderer import Renderer
 from octogon.server import start_server_process
 from octogon.utils.logger import get_print_fn
@@ -18,7 +19,7 @@ class Octogon:
     def __init__(self):
 
         # allows program to exit with CTRL+C
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, self.close_window)
 
         # the user config
         self.config = octogon.config.load_config()
@@ -31,6 +32,9 @@ class Octogon:
 
         # the HTML renderer
         self.renderer = Renderer(self)
+
+        # the QT window
+        self.window = OctogonWidget(self)
 
         # start the SCSS watcher
         # watcher_thread = threading.Thread(target=observer.start)
@@ -51,10 +55,22 @@ class Octogon:
 
     def start(self):
         """Start the GUI. Application will loop here."""
-        start_gui_loop(self)
+        self.window.start()
+        self.on_close()
 
-    def on_close(self):
+    def close_window(self, *args):
+        self.window.close()
+
+    def on_compile(self, name: str, ext: str, outdir: str):
+        """Called when a file has been compiled (usually .scss)."""
+        if name == "window":
+            self.window.update_css()
+
+    def on_close(self, *args):
         """Called when the program is exited (CTRL+C or through GUI)."""
+
+        # ensure the window is closed
+        self.window.close()
 
         # stop the Flask server
         self.server_process.terminate()

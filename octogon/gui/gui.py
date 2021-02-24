@@ -60,3 +60,56 @@ class SBWinsWidget(SBWidgetPair):
                 wins += 1
 
         self.scoreboard[self.key] = wins
+
+
+class SBPortWidget:
+    """Set the port number of a player."""
+
+    def __init__(self, parent, key: str, port: int):
+
+        self.key = key
+        self.scoreboard = parent.octogon.scoreboard
+
+        self.btns = [
+            QCheckBox(""),
+            QCheckBox(""),
+            QCheckBox(""),
+            QCheckBox(""),
+        ]
+
+        self.btns[0].setObjectName("port1")
+        self.btns[0].toggled.connect(self.on_port_1)
+        self.btns[1].setObjectName("port2")
+        self.btns[1].toggled.connect(self.on_port_2)
+        self.btns[2].setObjectName("port3")
+        self.btns[2].toggled.connect(self.on_port_3)
+        self.btns[3].setObjectName("port4")
+        self.btns[3].toggled.connect(self.on_port_4)
+
+        self.current_port = 0
+        self.set_port(port)
+
+    def on_port_1(self):
+        self.set_port(0, self.btns[0].isChecked())
+
+    def on_port_2(self):
+        self.set_port(1, self.btns[1].isChecked())
+
+    def on_port_3(self):
+        self.set_port(2, self.btns[2].isChecked())
+
+    def on_port_4(self):
+        self.set_port(3, self.btns[3].isChecked())
+
+    def set_port(self, n: int, state: bool = True):
+        """Set the controller port."""
+        for i, btn in enumerate(self.btns):
+            btn.blockSignals(True)
+            if i != n:
+                btn.setChecked(False)
+            else:
+                btn.setChecked(True)
+            btn.blockSignals(False)
+
+        self.current_port = n
+        self.scoreboard[self.key] = self.current_port

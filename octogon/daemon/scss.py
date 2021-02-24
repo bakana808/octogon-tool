@@ -17,10 +17,13 @@ class SCSSAutoCompiler(FileSystemEventHandler):
     OUTPUT_DIR = "site/style"
 
     def __init__(self, octogon):
+
         config = octogon.config
+
+        self.octogon = octogon
         self.observer = Observer()
         self.observer.schedule(self, path=config.STYLE_PATH, recursive=True)
-        SCSSAutoCompiler.batch_compile(config.STYLE_PATH)
+        self.batch_compile(config.STYLE_PATH)
 
     def start(self) -> Observer:
         self.observer.setDaemon(True)
@@ -32,22 +35,22 @@ class SCSSAutoCompiler(FileSystemEventHandler):
     def on_modified(self, event: FileModifiedEvent):
         path = event.src_path
         if os.path.splitext(path)[1] == ".scss":
-            SCSSAutoCompiler.batch_compile(os.path.dirname(path))
+            self.batch_compile(os.path.dirname(path))
 
-    @staticmethod
-    def compile_file(path):
+    def compile_file(self, path: str):
         """Compiles SCSS into CSS."""
 
         # don't compile non-scss files
         if os.path.splitext(path)[1] != ".scss":
             return
 
-        output_path = os.path.join(
-            SCSSAutoCompiler.OUTPUT_DIR, Path(path).stem + ".css"
-        )
+        # the name of the compiled file without extensions
+        name = Path(path).stem
+        output_path = os.path.join(SCSSAutoCompiler.OUTPUT_DIR, name + ".css")
 
         try:
-            os.makedirs(os.path.dirname(output_path))  # ensure these folders exist
+            # ensure these folders exist
+            os.makedirs(os.path.dirname(output_path))
         except FileExistsError:
             pass
 
@@ -55,12 +58,12 @@ class SCSSAutoCompiler(FileSystemEventHandler):
             print(f"compiling SCSS at {path} => {output_path}")
             with open(output_path, "w") as f:
                 f.write(Compiler(search_path=("style/",)).compile(path))
+            self.octogon.on_compile(name, "scss", output_path)
         except Exception as e:
             print("failed to compile scss: ")
             print(e)
 
-    @staticmethod
-    def batch_compile(dirpath):
+    def batch_compile(self, dirpath):
         """Compiles all SCSS files in a folder."""
 
         print(f"compiling all SCSS files in {dirpath}")
@@ -73,6 +76,6 @@ class SCSSAutoCompiler(FileSystemEventHandler):
             ]
 
             for filepath in files:
-                SCSSAutoCompiler.compile_file(filepath)
+                self.compile_file(filepath)
         except Exception as e:
             print(e)
