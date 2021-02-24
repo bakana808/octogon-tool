@@ -20,11 +20,11 @@ Current features:
 
 ## Downloads
 
-Linux builds can be found on the [latest release](https://github.com/branden-akana/octogon-panel/releases).
+Linux and Windows builds can be found on the [latest release](https://github.com/branden-akana/octogon-panel/releases).
 
 For other platforms, see the [Running](https://github.com/branden-akana/octogon-panel#Running) section for instructions on how to build and run Octogon.
 
-## Running
+## Running and Building
 
 ### Setup
 
@@ -35,6 +35,8 @@ For other platforms, see the [Running](https://github.com/branden-akana/octogon-
 
 Then, to run the program run `python main.py`.
 
+To build the program, run `pyinstaller build.spec`. The executable should be located in the `dist` folder.
+
 ## Configuration
 
 A `config.json` file will be created when this program is first run.
@@ -42,10 +44,12 @@ In this config you'll find a few options that are left blank.
 You must set these manually for the Smash.gg integration to work.
 
 `smashgg_api_key`: an API key required by Smash.gg to retrieve information from their servers.
-You can create an API key through Smash.gg [here](https://smash.gg/admin/profile/developer).\
+You can create an API key through Smash.gg [here](https://smash.gg/admin/profile/developer).
+
 `smashgg_tourny_slug`: the ID of your tournament from your Smash.gg tournament page.
 For example, if the link to my tournament is `https://smash.gg/tournament/octo-gon-8`, then the slug is `octo-gon-8`.
-This is used to retrieve the start date and time for the countdown layout.\
+This is used to retrieve the start date and time for the countdown layout.
+
 `smashgg_event_id`: the ID of the event to retrieve bracket and standing information from.
 You can find this by going into the settings for an event on Smash.gg.
 For example, if the settings page for my event is `https://smash.gg/admin/tournament/octo-gon-8/event-edit/532752`, then the ID is `532752`.
