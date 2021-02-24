@@ -1,0 +1,53 @@
+
+name: Build Releases
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build Releases
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        if: ${{ runner.os == "Linux" }}
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libc-bin binutils zip
+
+      - name: Build executable
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+          pyinstaller build.spec
+
+      - name: Package Release (Windows)
+        if: ${{ runner.os == "Windows" }}
+        run: |
+          7z -tzip octogon-panel-windows.zip dist\\*
+
+      - name: Package Release (Linux)
+        if: ${{ runner.os == "Linux" }}
+        run: |
+          zip -r ./octogon-panel-linux.zip ./dist/
+
+      - name: Release Action
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ github.ref }}
+          allowUpdates: true
+          artifact: "./*.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
