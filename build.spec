@@ -33,7 +33,7 @@ exe = EXE(pyz,
           runtime_tmpdir=None,
           console=False )
 
-for folder in ["assets", "output", "templates", "style", "queries"]:
+for folder in ["assets", "templates", "scripts", "style", "queries"]:
     try:
         shutil.copytree(f"./{folder}", f"{DISTPATH}/{folder}")
     except Exception:
