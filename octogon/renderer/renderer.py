@@ -284,7 +284,7 @@ class Renderer:
 
         mask_src = self.render_mask()
 
-        with open("output/mask.svg", "w") as f:
+        with open("site/mask.svg", "w") as f:
             f.write(mask_src)
 
         return self.render("background", bg_path=bg_path)

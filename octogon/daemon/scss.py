@@ -1,13 +1,21 @@
 import os
+from pathlib import Path
+
 from scss.compiler import Compiler
+from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+
 import octogon.config
 
 print = octogon.config.get_print_fn("scss")
 
 
 class SCSSAutoCompiler(FileSystemEventHandler):
+    """Handles the automatic compilation of .scss files."""
+
+    # output directory of the compiled .css files
+    OUTPUT_DIR = "site/style"
+
     def __init__(self):
         config = octogon.config.config
         self.observer = Observer()
@@ -34,9 +42,17 @@ class SCSSAutoCompiler(FileSystemEventHandler):
         if os.path.splitext(path)[1] != ".scss":
             return
 
+        output_path = os.path.join(
+            SCSSAutoCompiler.OUTPUT_DIR, Path(path).stem + ".css"
+        )
+
         try:
-            output_path = os.path.splitext(path)[0] + ".css"
-            print(f"compiling SCSS at {path}")
+            os.makedirs(os.path.dirname(output_path))  # ensure these folders exist
+        except FileExistsError:
+            pass
+
+        try:
+            print(f"compiling SCSS at {path} => {output_path}")
             with open(output_path, "w") as f:
                 f.write(Compiler(search_path=("style/",)).compile(path))
         except Exception as e:

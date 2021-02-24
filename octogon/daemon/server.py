@@ -1,23 +1,15 @@
-import os
 import logging
-from octogon.api.spotify import spotify_get_song, spotify_get_artist
-from octogon.web.tag import div, span
+import os
+import pathlib
+
 from flask import Flask, request, send_from_directory
-from octogon.renderer.renderer import Renderer
+
 import octogon.config
+from octogon.api.spotify import spotify_get_artist, spotify_get_song
+from octogon.renderer.renderer import Renderer
+from octogon.web.tag import div, span
 
 print = octogon.config.get_print_fn("flask")
-
-# tournament / event ids to use
-
-smashgg_tournament_slug = "octo-gon-8"
-smashgg_event_id = 532752  # octo-gon 8
-# smashgg_event_id = 529270  # octo-gon 7
-# smashgg_event_id = 526404  # octo-gon 6
-# smashgg_event_id = 522705  # octo-gon 5
-# smashgg_event_id = 521088  # octo-gon 4 singles
-# smashgg_event_id = 519066  # octo-gon 3 singles
-# smashgg_event_id = 517237  # octo-gon 2 singles
 
 # disable info logging for flask
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
@@ -55,24 +47,30 @@ def stop_server():
         pass
 
 
-@app.route("/standings")
-def _smashgg_standings():
-    return renderer.render_standings(smashgg_event_id)
+@app.route("/<path:path>", methods=["GET"])
+def _get_file(path):
+    """Called when a file is requested."""
+    # _, ext = os.path.splitext(path)
+    # if ext == ".json":
+    # return send_from_directory("../", path, mimetype="text/json")
+    # print(f"cwd: {os.getcwd()}, path: {path}")
+
+    # print("GET {}".format(path))
+    # print("folder = %s" % pathlib.Path(path).parts[0])
+
+    if pathlib.Path(path).parts[0] == "assets":
+        # looking in "assets"; located in the cwd
+        directory = os.getcwd()
+    else:
+        # looking in "scripts" or "style"; located in "sites"
+        directory = os.path.join(os.getcwd(), "site")
+
+    # send the requested file from the directory
+    return send_from_directory(directory, path, cache_timeout=0)
 
 
-@app.route("/countdown")
-def _smashgg_countdown():
-    return renderer.render_countdown(smashgg_tournament_slug)
-
-
-@app.route("/bracket")
-def _smashgg_bracket():
-    return renderer.render_bracket(smashgg_event_id)
-
-
-@app.route("/test-player")
-def _test_player():
-    return renderer.render_test_player()
+# Scoreboard Routes
+# -----------------
 
 
 @app.route("/scoreboard")
@@ -85,13 +83,28 @@ def _background():
     return renderer.render_background()
 
 
-@app.route("/spotify")
-def _spotify():
-    name, artist = spotify_get_song(), spotify_get_artist()
-    body = div("#spotify")(
-        span(".sp_icon")("🎵"), span(".sp_title")(f"{artist} - {name}")
-    )
-    return renderer.render("default", body=body, auto_refresh=5)
+# Smash.gg Integration Routes
+# ---------------------------
+
+
+@app.route("/countdown")
+def _smashgg_countdown():
+    return renderer.render_countdown(octogon.config.config.SMASHGG_TOURNY_SLUG)
+
+
+@app.route("/standings")
+def _smashgg_standings():
+    return renderer.render_standings(octogon.config.config.SMASHGG_EVENT_ID)
+
+
+@app.route("/bracket")
+def _smashgg_bracket():
+    return renderer.render_bracket(octogon.config.config.SMASHGG_EVENT_ID)
+
+
+@app.route("/test-player")
+def _test_player():
+    return renderer.render_test_player()
 
 
 current = 0
@@ -99,20 +112,30 @@ current = 0
 
 @app.route("/rotation")
 def _rotation():
+    """Rotates between the standings and bracket overlays automatically."""
     global current
+    config = octogon.config.config
     auto_refresh = 20
     if current == 0:
         current += 1
-        return renderer.render_bracket(smashgg_event_id, auto_refresh=auto_refresh)
+        return renderer.render_bracket(
+            config.SMASHGG_EVENT_ID, auto_refresh=auto_refresh
+        )
     elif current == 1:
         current = 0
-        return renderer.render_standings(smashgg_event_id, auto_refresh=auto_refresh)
+        return renderer.render_standings(
+            config.SMASHGG_EVENT_ID, auto_refresh=auto_refresh
+        )
 
 
-@app.route("/<path:path>", methods=["GET"])
-def _get_file(path):
-    # _, ext = os.path.splitext(path)
-    # if ext == ".json":
-    # return send_from_directory("../", path, mimetype="text/json")
-    # print(f"cwd: {os.getcwd()}, path: {path}")
-    return send_from_directory(os.getcwd(), path, cache_timeout=0)
+# Spotify Integration Routes
+# --------------------------
+
+
+@app.route("/spotify")
+def _spotify():
+    name, artist = spotify_get_song(), spotify_get_artist()
+    body = div("#spotify")(
+        span(".sp_icon")("🎵"), span(".sp_title")(f"{artist} - {name}")
+    )
+    return renderer.render("default", body=body, auto_refresh=5)

@@ -60,8 +60,8 @@ def load_config():
     except FileNotFoundError:
         # write a default config
         conf = {
-            "style_path": "style/",
-            "template_path": "templates/",
+            "style_path": "templates/scss/",
+            "template_path": "templates/html",
             "sb_path": "scoreboard.json",
             "smashgg_api_key": "",
             "smashgg_tourny_slug": "",
