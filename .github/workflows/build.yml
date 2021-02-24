@@ -37,7 +37,7 @@ jobs:
       - name: Package Release (Windows)
         if: ${{ runner.os == 'Windows' }}
         run: |
-          7z -tzip octogon-panel-windows.zip dist\\*
+          7z a -t zip octogon-panel-windows.zip dist\*
 
       - name: Package Release (Linux)
         if: ${{ runner.os == 'Linux' }}
