@@ -87,12 +87,10 @@ The most up-to-date list of sources can be found in [server.py](https://github.c
 
 ### 2. Controlling the Scoreboard
 
-When run, you will see a window containing scoreboard controls.
-![Octogon Panel](https://i.imgur.com/IpyzLm1.png)
+When run, a window will open containing scoreboard controls.
+![Octogon Panel](https://i.imgur.com/uPlivUx.png)
 
 Edit the information on the window, then update the scoreboard overlay by clicking "Update".
-
-Note that the Smash.gg settings on the bottom of the window currently don't do anything.
 
 ### 3. Customizing
 
