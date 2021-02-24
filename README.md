@@ -82,6 +82,7 @@ localhost:8000/bracket
 # recommended size: 1920x100 (can adjust to make narrower, note the text might get cut off)
 localhost:8000/spotify
 ```
+
 The most up-to-date list of sources can be found in [server.py](https://github.com/branden-akana/octogon-panel/blob/master/octogon/daemon/server.py)
 
 ### 2. Controlling the Scoreboard
@@ -103,8 +104,8 @@ Backgrounds can be added into the `assets/bgs/` folder. At this time, only `asse
 
 #### HTML/CSS
 
-HTML templates are located in `templates/`, which are rendered using Jinja2 when serving overlays.
-SCSS files are used for styling, and can be found in `style/`. These files are rendered automatically when they are modified.
+HTML templates are located in `templates/html`, which are rendered using Jinja2 when serving overlays.
+SCSS files are used for styling, and can be found in `style/html`. These files are rendered automatically when they are modified.
 
 #### Character Portraits
 
