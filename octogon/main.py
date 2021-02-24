@@ -1,9 +1,9 @@
 import traceback
 
 # from server import start_server, create_server
-import octogon.config
-from octogon.lookup import characters
-from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
+from octogon.utils.logger import get_print_fn
+from octogon.utils.lookup import characters
+from octogon.gui.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import (
     QCheckBox,
 )
 
-print = octogon.config.get_print_fn("qt")
+print = get_print_fn("qt")
 
 
 class OctogonWidget(QMainWindow):

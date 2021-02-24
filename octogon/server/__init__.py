@@ -3,10 +3,10 @@ from multiprocessing import Process
 
 from flask import Flask, request
 
-import octogon.config
-import octogon.web.router as router
+from octogon.utils.logger import get_print_fn
+import octogon.server.router as router
 
-print = octogon.config.get_print_fn("flask")
+print = get_print_fn("flask")
 
 
 class OctogonServer:

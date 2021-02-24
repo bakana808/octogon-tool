@@ -5,10 +5,10 @@ import typing
 from flask import send_from_directory
 
 from octogon.api.spotify import spotify_get_artist, spotify_get_song
-from octogon.web.tag import div, span
+from octogon.utils.tag import div, span
 
 if typing.TYPE_CHECKING:
-    from octogon.daemon.server import OctogonServer
+    from octogon.server import OctogonServer
 
 
 def add_routes(server: "OctogonServer"):

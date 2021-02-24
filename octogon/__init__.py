@@ -1,13 +1,15 @@
-from octogon.main import start_gui_loop
 import signal
-import octogon.data
-from octogon.renderer.renderer import Renderer
-from octogon.api.smashgg import SmashAPI
-import octogon.config
-from octogon.daemon.scss import SCSSAutoCompiler
-from octogon.daemon.server import start_server_process
 
-print = octogon.config.get_print_fn()
+import octogon.config
+import octogon.scoreboard
+from octogon.api.smashgg import SmashAPI
+from octogon.daemon.scss import SCSSAutoCompiler
+from octogon.main import start_gui_loop
+from octogon.renderer import Renderer
+from octogon.server import start_server_process
+from octogon.utils.logger import get_print_fn
+
+print = get_print_fn()
 
 
 class Octogon:
@@ -22,7 +24,7 @@ class Octogon:
         self.config = octogon.config.load_config()
 
         # the scoreboard data object
-        self.scoreboard = octogon.data.init_scoreboard(self)
+        self.scoreboard = octogon.scoreboard.init_scoreboard(self)
 
         # the smash.gg object to use for API integration
         self.api_smashgg = SmashAPI(self)

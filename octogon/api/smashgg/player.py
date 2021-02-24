@@ -1,6 +1,6 @@
 from collections import Counter
 from octogon.api.smashgg.response import SmashggResponse
-from octogon.lookup import characters
+from octogon.utils.lookup import characters
 from typing import Optional, Dict
 
 

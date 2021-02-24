@@ -5,9 +5,9 @@ from scss.compiler import Compiler
 from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-import octogon.config
+from octogon.utils.logger import get_print_fn
 
-print = octogon.config.get_print_fn("scss")
+print = get_print_fn("scss")
 
 
 class SCSSAutoCompiler(FileSystemEventHandler):

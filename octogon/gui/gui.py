@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QComboBox, QCheckBox
 
-from octogon.config import get_print_fn
+from octogon.utils.logger import get_print_fn
 
 print = get_print_fn("qt")
 

@@ -1,4 +1,4 @@
-from octogon.data import JsonData
+from octogon.utils.data import JsonData
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
