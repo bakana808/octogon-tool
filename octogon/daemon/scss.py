@@ -16,8 +16,8 @@ class SCSSAutoCompiler(FileSystemEventHandler):
     # output directory of the compiled .css files
     OUTPUT_DIR = "site/style"
 
-    def __init__(self):
-        config = octogon.config.config
+    def __init__(self, octogon):
+        config = octogon.config
         self.observer = Observer()
         self.observer.schedule(self, path=config.STYLE_PATH, recursive=True)
         SCSSAutoCompiler.batch_compile(config.STYLE_PATH)

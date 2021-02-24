@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QComboBox, QCheckBox
 
-import octogon.data as data
 from octogon.config import get_print_fn
 
 print = get_print_fn("qt")
@@ -11,6 +10,7 @@ class SBWidgetPair:
 
         self.key = key
         self.label = QLabel(name, parent)
+        self.scoreboard = parent.octogon.scoreboard
 
     def on_edited(self):
         pass
@@ -21,12 +21,11 @@ class SBTextWidget(SBWidgetPair):
         super().__init__(parent, name, key)
 
         self.edit = QLineEdit(parent)
-        self.edit.setText(data.scoreboard[key])
+        self.edit.setText(self.scoreboard[key])
         self.edit.textChanged.connect(self.on_edited)
 
     def on_edited(self):
-        print("updating sb data")
-        data.scoreboard[self.key] = self.edit.text()
+        self.scoreboard[self.key] = self.edit.text()
 
 
 class SBDropdownWidget(SBWidgetPair):
@@ -35,12 +34,11 @@ class SBDropdownWidget(SBWidgetPair):
 
         self.edit = QComboBox(parent)
         self.edit.addItems(items)
-        self.edit.setCurrentText(data.scoreboard[self.key])
+        self.edit.setCurrentText(self.scoreboard[self.key])
         self.edit.currentIndexChanged.connect(self.on_edited)
 
     def on_edited(self):
-        print("updating sb data")
-        data.scoreboard[self.key] = self.edit.currentText()
+        self.scoreboard[self.key] = self.edit.currentText()
 
 
 class SBWinsWidget(SBWidgetPair):
@@ -56,10 +54,9 @@ class SBWinsWidget(SBWidgetPair):
             btn.toggled.connect(self.on_edited)
 
     def on_edited(self):
-        print("updating sb data")
         wins = 0
         for btn in self.btns:
             if btn.isChecked():
                 wins += 1
 
-        data.scoreboard[self.key] = wins
+        self.scoreboard[self.key] = wins

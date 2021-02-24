@@ -19,13 +19,14 @@ class SmashggResponse(JsonData):
 
         except Exception:
 
-            if "error" in data:
-                raise RuntimeError(data["error"])
+            if "success" in data and data["success"] is False:
+                raise RuntimeError("Smash.gg query unsuccessful: " + data["message"])
 
             if not type(data) is dict:
-                raise RuntimeError(
-                    "unable to parse response data: \n" + str(data)
-                )
+                raise RuntimeError("unable to parse response data: \n" + str(data))
+
+            if "data" not in data:
+                raise RuntimeError("No data returned from this query.\n" + str(data))
 
             if data["data"][key] is None:
                 raise RuntimeError("data is empty")

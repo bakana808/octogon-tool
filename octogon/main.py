@@ -1,14 +1,9 @@
-import signal
 import traceback
 
 # from server import start_server, create_server
 import octogon.config
-import octogon.data as data
-from octogon.daemon.server import start_server, stop_server
-from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.lookup import characters
 from octogon.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget
-from multiprocessing import Process
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
@@ -32,20 +27,17 @@ from PyQt5.QtWidgets import (
     QCheckBox,
 )
 
-print = octogon.config.print
-
-# allows program to exit with CTRL+C
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+print = octogon.config.get_print_fn("qt")
 
 
 class OctogonWidget(QMainWindow):
-    def __init__(self):
+    def __init__(self, octogon):
         super().__init__()
 
+        self.octogon = octogon
+        scoreboard = octogon.scoreboard
+
         # layout
-
-        scoreboard = data.scoreboard
-
         wid = QWidget(self)
         self.setCentralWidget(wid)
 
@@ -59,18 +51,18 @@ class OctogonWidget(QMainWindow):
         smash_event_edit = QLineEdit()
 
         # player names
-        self.sb_p1_name = SBTextWidget(wid, "P1 Name", key="p1.name")
-        self.sb_p2_name = SBTextWidget(wid, "P2 Name", key="p2.name")
+        self.sb_p1_name = SBTextWidget(self, "P1 Name", key="p1.name")
+        self.sb_p2_name = SBTextWidget(self, "P2 Name", key="p2.name")
 
         # characters chosen
         character_names = list(characters.values())
 
         self.sb_p1_char = SBDropdownWidget(
-            wid, "Character", key="p1.character", items=character_names
+            self, "Character", key="p1.character", items=character_names
         )
 
         self.sb_p2_char = SBDropdownWidget(
-            wid, "Character", key="p2.character", items=character_names
+            self, "Character", key="p2.character", items=character_names
         )
 
         # number of wins per player
@@ -178,33 +170,16 @@ class OctogonWidget(QMainWindow):
             self.close()
 
 
-def main():
-
-    # server = create_server()
-    observer = SCSSAutoCompiler()
+def start_gui_loop(octogon):
+    """Start the QT application. The process will loop on this function."""
 
     try:
         # configure QT window
         app = QApplication([])
         # app.setStyle(QStyleFactory.create("GTK+"))
 
-        # load scoreboard
-        data.init_scoreboard()
-
         # create main window
-        window = OctogonWidget()  # NOQA
-
-        # start server in another thread
-        # thread = threading.Thread(target=start_server, args=(server,))
-        thread = Process(target=start_server)
-        thread.daemon = True
-        thread.start()
-
-        # start SCSS autocompiler
-        # watcher_thread = threading.Thread(target=observer.start)
-        # watcher_thread.daemon = True
-        # watcher_thread.start()
-        observer.start()
+        window = OctogonWidget(octogon)  # NOQA
 
         app.exec_()
 
@@ -215,9 +190,4 @@ def main():
         print(traceback.format_exc())
 
     finally:
-        thread.terminate()
-        thread.join()
-        print("server has stopped.")
-        observer.stop()
-        # watcher_thread.join()
-        print("scss compiler has stopped.")
+        octogon.on_close()

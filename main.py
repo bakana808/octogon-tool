@@ -1,5 +1,4 @@
-from octogon.config import load_config
-from octogon.main import main
+from octogon import Octogon
 
-load_config()
-main()
+octogon = Octogon()
+octogon.start()

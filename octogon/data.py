@@ -46,6 +46,10 @@ class JsonData:
         else:
             return value
 
+    def on_data_changed(self, k, v):
+        """Called when a value has changed."""
+        pass
+
     def __setitem__(self, k, v):
         """Set a value in the json object"""
 
@@ -59,6 +63,8 @@ class JsonData:
                 ret[key] = v
             else:
                 ret = ret[key]
+
+        self.on_data_changed(k, v)
 
 
 class ScoreboardData(JsonData):
@@ -88,14 +94,15 @@ class ScoreboardData(JsonData):
         },
     }
 
-    def __init__(self):
+    def __init__(self, octogon):
+        self.octogon = octogon
         json = self.load()
         super().__init__(json, True)
 
     def load(self) -> dict:
         """Load the scoreboard JSON."""
         print("loading scoreboard JSON...")
-        config = octogon.config.config
+        config = self.octogon.config
 
         # try to read the scoreboard file or create a new one
         try:
@@ -112,16 +119,15 @@ class ScoreboardData(JsonData):
         return data
 
     def save(self):
-        print("saving scoreboard JSON...")
-        config = octogon.config.config
+        config = self.octogon.config
 
         with open(config.SB_DATA_PATH, "w") as f:
             json.dump(self._json, f, ensure_ascii=False, indent=4)
+            print("committed scoreboard changes")
+
+    def on_data_changed(self, k, v):
+        print("scoreboard has been updated")
 
 
-scoreboard = None
-
-
-def init_scoreboard():
-    global scoreboard
-    scoreboard = ScoreboardData()
+def init_scoreboard(octogon):
+    return ScoreboardData(octogon)

@@ -2,7 +2,6 @@ import json
 import os
 import requests
 from octogon.util import defaultdict
-import octogon.config
 from octogon.api.smashgg.tournament import TournamentData
 from octogon.api.smashgg.response import SmashggResponse
 from octogon.api.smashgg.player import PlayerData
@@ -16,9 +15,9 @@ class SmashAPI:
 
     PATH: str = "queries/"
 
-    def __init__(self):
+    def __init__(self, octogon):
 
-        config = octogon.config.config
+        config = octogon.config
 
         self.queries = {}
 

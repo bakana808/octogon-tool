@@ -4,7 +4,6 @@ import random
 from jinja2 import Environment, FileSystemLoader
 
 import octogon.config
-from octogon.api.smashgg import SmashAPI
 from octogon.api.smashgg.player import PlayerData
 from octogon.lookup import get_portrait_url
 from octogon.web.tag import div, span
@@ -39,11 +38,11 @@ class Renderer:
     The class used to render requested information or overlays as HTML.
     """
 
-    def __init__(self):
+    def __init__(self, octogon):
 
         print("loading HTML templates...")
 
-        config = octogon.config.config
+        config = octogon.config
         path = config.TEMPLATE_PATH
         self.env = Environment(loader=FileSystemLoader(path))
         self.templates = {}
@@ -56,8 +55,7 @@ class Renderer:
             self.templates[name] = template
             print(f"loaded template '{ name }' ({filepath})")
 
-        # the smash.gg object to use for API integration
-        self.smashgg = SmashAPI()
+        self.smashgg = octogon.api_smashgg
 
         print("done!")
 
@@ -275,19 +273,21 @@ class Renderer:
 
         return self.render("bracket", auto_refresh=auto_refresh, body=str(elm))
 
-    def render_scoreboard(self) -> bytes:
+    def render_scoreboard(self) -> str:
         return self.render("scoreboard")
 
     def render_background(self) -> str:
-
         bg_path = "assets/bgs/1.png"
+        self.generate_mask()
+        return self.render("background", bg_path=bg_path)
+
+    def generate_mask(self):
+        """Render a mask and save it to file."""
 
         mask_src = self.render_mask()
-
         with open("site/mask.svg", "w") as f:
             f.write(mask_src)
-
-        return self.render("background", bg_path=bg_path)
+        print("generated a new background mask")
 
     def render_mask(self) -> str:
         """
