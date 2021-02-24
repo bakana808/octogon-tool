@@ -23,7 +23,7 @@ jobs:
           python-version: '3.8'
 
       - name: Install dependencies
-        if: ${{ runner.os == "Linux" }}
+        if: ${{ runner.os == 'Linux' }}
         run: |
           sudo apt-get update
           sudo apt-get -y install libc-bin binutils zip
@@ -35,12 +35,12 @@ jobs:
           pyinstaller build.spec
 
       - name: Package Release (Windows)
-        if: ${{ runner.os == "Windows" }}
+        if: ${{ runner.os == 'Windows' }}
         run: |
           7z -tzip octogon-panel-windows.zip dist\\*
 
       - name: Package Release (Linux)
-        if: ${{ runner.os == "Linux" }}
+        if: ${{ runner.os == 'Linux' }}
         run: |
           zip -r ./octogon-panel-linux.zip ./dist/
 
@@ -49,5 +49,5 @@ jobs:
         with:
           name: Release ${{ github.ref }}
           allowUpdates: true
-          artifact: "./*.zip"
+          artifact: './*.zip'
           token: ${{ secrets.GITHUB_TOKEN }}
