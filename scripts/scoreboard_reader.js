@@ -70,11 +70,15 @@ function get_elm(id) {
  * @param {string} character the name of the character
  * @return {string} the path to the character's portrait
  */
-function get_portrait_path(character) {
+function get_portrait_path(character, color = "") {
 	if (character === "") {
 		return `/assets/portraits/Random CPU.png`;
 	}
-	return `/assets/portraits/${character}/Default.png`;
+	if (color === "") {
+		return `/assets/portraits/${character}/Default.png`;
+	} else {
+		return `/assets/portraits/${character}/${color}.png`;
+	}
 }
 
 class ScoreboardData {
@@ -239,16 +243,27 @@ async function check_scoreboard_changes() {
 	});
 
 	// PLAYER CHARACTER PORTRAIT
+	
+	function update_portrait(player) {
+		if (player == 0) {
+			var id = "p1_portrait";
+			var character = scoreboard.json["p1"]["character"];
+			var color = scoreboard.json["p1"]["color"];
+		} else {
+			var id = "p2_portrait";
+			var character = scoreboard.json["p2"]["character"];
+			var color = scoreboard.json["p2"]["color"];
+		}
 
-	scoreboard.if_modified("p1.character", (character) => {
-		var path = get_portrait_path(character);
-		get_elm("p1_portrait").style.backgroundImage = `url("${path}")`;
-	});
+		var path = get_portrait_path(character, color);
+		//print(`portrait path => ${ path }`);
+		get_elm(id).style.backgroundImage = `url("${path}")`;
+	}
 
-	scoreboard.if_modified("p2.character", (character) => {
-		var path = get_portrait_path(character);
-		get_elm("p2_portrait").style.backgroundImage = `url("${path}")`;
-	});
+	scoreboard.if_modified("p1.character", (_) => { update_portrait(0) });
+	scoreboard.if_modified("p1.character", (_) => { update_portrait(0) });
+	scoreboard.if_modified("p1.color", (_) => { update_portrait(0) });
+	scoreboard.if_modified("p2.color", (_) => { update_portrait(1) });
 
 	// PLAYER CONTROLLER PORT
 	

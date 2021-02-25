@@ -26,7 +26,7 @@ characters = {
     13: "Mario",
     14: "Marth",
     15: "Mewtwo",
-    16: "Mr Game & watch",
+    16: "Mr Game & Watch",
     17: "Ness",
     18: "Peach",
     19: "Pichu",
@@ -37,6 +37,6 @@ characters = {
     24: "Yoshi",
     25: "Young Link",
     26: "Zelda",
-    628: "Zelda/Sheik",
-    1744: "Random",
+    # 628: "Zelda/Sheik",
+    # 1744: "Random",
 }

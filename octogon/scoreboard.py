@@ -18,19 +18,17 @@ class ScoreboardData(NestedDict):
         "p1": {
             "tag": "",
             "name": "Player 1",
-            "color": 0,
+            "color": "Default",
             "wins": 0,
             "character": "Captain Falcon",
-            "skin": 0,
             "port": 0,
         },
         "p2": {
             "tag": "",
             "name": "Player 2",
-            "color": 0,
+            "color": "Default",
             "wins": 0,
             "character": "Fox",
-            "skin": 0,
             "port": 1,
         },
     }

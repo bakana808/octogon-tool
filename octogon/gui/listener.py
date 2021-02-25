@@ -37,10 +37,15 @@ class WindowListener:
         win.widgets["p2.name"].edit.setText(p1_name)
 
         # swap characters
-        p1_char = win.widgets["p1.character"].edit.currentIndex()
-        p2_char = win.widgets["p2.character"].edit.currentIndex()
-        win.widgets["p1.character"].edit.setCurrentIndex(p2_char)
-        win.widgets["p2.character"].edit.setCurrentIndex(p1_char)
+        p1_char = win.widgets["p1.character"].cb_char.currentIndex()
+        p2_char = win.widgets["p2.character"].cb_char.currentIndex()
+        win.widgets["p1.character"].cb_char.setCurrentIndex(p2_char)
+        win.widgets["p2.character"].cb_char.setCurrentIndex(p1_char)
+
+        p1_color = win.widgets["p1.character"].cb_color.currentIndex()
+        p2_color = win.widgets["p2.character"].cb_color.currentIndex()
+        win.widgets["p1.character"].cb_color.setCurrentIndex(p2_color)
+        win.widgets["p2.character"].cb_color.setCurrentIndex(p1_color)
 
         # swap wins
         p1_wins = [btn.isChecked() for btn in win.widgets["p1.wins"].btns]

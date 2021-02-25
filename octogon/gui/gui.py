@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QComboBox, QCheckBox
 
 from octogon.utils.logger import get_print_fn
+from octogon.utils.lookup import characters
+from octogon.utils import list_file_basenames
 
 print = get_print_fn("qt")
 
@@ -39,6 +41,48 @@ class SBDropdownWidget(SBWidgetPair):
 
     def on_edited(self):
         self.scoreboard[self.key] = self.edit.currentText()
+
+
+class SBCharacterWidget:
+    def __init__(self, window, char_key: str, color_key: str):
+
+        self.char_key = char_key
+        self.color_key = color_key
+        self.scoreboard = window.octogon.scoreboard
+
+        self.label = QLabel("Character")
+        self.cb_char = QComboBox(window)
+        self.cb_color = QComboBox(window)
+
+        char_names = list(characters.values())
+        self.cb_char.addItems(char_names)
+
+        self.cb_char.setCurrentText(self.scoreboard[self.char_key])
+        self.update_colors()
+        self.cb_char.setCurrentText(self.scoreboard[self.color_key])
+
+        self.cb_char.currentIndexChanged.connect(self.on_character_changed)
+        self.cb_color.currentIndexChanged.connect(self.on_color_changed)
+
+    def update_colors(self):
+        """
+        Update the items in the colors combo box according
+        to the selected character.
+        """
+        print("updating colors")
+
+        char = self.cb_char.currentText()
+
+        colors = list_file_basenames("assets/portraits/%s" % char)
+        self.cb_color.clear()
+        self.cb_color.addItems(colors)
+
+    def on_character_changed(self):
+        self.scoreboard[self.char_key] = self.cb_char.currentText()
+        self.update_colors()
+
+    def on_color_changed(self):
+        self.scoreboard[self.color_key] = self.cb_color.currentText()
 
 
 class SBWinsWidget(SBWidgetPair):
