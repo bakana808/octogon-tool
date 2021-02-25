@@ -64,14 +64,7 @@ class Octogon:
     def on_scoreboard_update(self):
         """Called when the scoreboard file has changed."""
         self.is_scoreboard_modified = True
-        print("scoreboard has been updated, flagged the scoreboard as not modified")
-
-    def get_scoreboard_modified(self):
-        return self.is_scoreboard_modified
-
-    def reset_scoreboard_flag(self):
-        self.is_scoreboard_modified = False
-        print("flagged the scoreboard as not modified")
+        print("scoreboard has been updated")
 
     def on_compile(self, name: str, ext: str, outdir: str):
         """Called when a file has been compiled (usually .scss)."""
