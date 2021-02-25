@@ -1,5 +1,5 @@
 import logging
-from multiprocessing import Process
+import sys
 from threading import Thread
 from typing import TYPE_CHECKING
 
@@ -32,21 +32,13 @@ class OctogonServer:
         router.add_routes(self)
 
     def start(self):
-        self.app.run(debug=True, use_reloader=False, port=8000)
+        try:
+            self.app.run(debug=False, use_reloader=False, port=8000)
+        except RuntimeError:
+            sys.exit(0)
 
     def stop(self):
-        """
-        Stop the Flask server.
-        Provided by:
-        https://stackoverflow.com/a/17053522/2886326
-        """
-
-        try:
-            fn = request.environ.get("werkzeug.server.shutdown")
-            fn()
-
-        except Exception:
-            pass
+        raise RuntimeError("Server shutting down")
 
 
 def start_server_process(octogon: "Octogon") -> Thread:

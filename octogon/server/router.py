@@ -76,13 +76,14 @@ def add_routes(server: "OctogonServer"):
 
     @app.route("/scoreboard/data")
     def _scoreboard_data():
-        nonlocal octogon
+        flags = octogon.flags
         # print("is_modified: %s" % octogon.get_scoreboard_modified())
-        if octogon.is_scoreboard_modified:
-            octogon.is_scoreboard_modified = False
-            return {"is_modified": True, "scoreboard": octogon.scoreboard.dictionary}
+        if flags.get_scoreboard_modified():
+            print("modification detected")
+            flags.set_scoreboard_modified(False)
+            return {"is_modified": True, "scoreboard": flags.get_scoreboard()}
         else:
-            return {"is_modified": False, "scoreboard": octogon.scoreboard.dictionary}
+            return {"is_modified": False, "scoreboard": flags.get_scoreboard()}
 
     @app.route("/background")
     def _background():
