@@ -6,3 +6,4 @@ watchdog == 0.10.3
 SwSpotify == 1.2.1
 bs4 == 0.0.1
 colorama == 0.4.4
+qtsass == 0.3.0
