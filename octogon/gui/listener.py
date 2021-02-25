@@ -17,10 +17,10 @@ class WindowListener:
     def update_scoreboard(self):
         """Update the scoreboard."""
         self.window.octogon.scoreboard.save()
-        self.window.sb_update_bt.setText("Scoreboard updated!")
+        self.window.widgets["update_btn"].setText("Scoreboard updated!")
 
         def _reset_button():
-            self.window.sb_update_bt.setText("Update")
+            self.window.widgets["update_btn"].setText("Update")
 
         # reset button text after 2 seconds
         Timer(2.0, _reset_button).start()
@@ -31,20 +31,25 @@ class WindowListener:
         win = self.window
 
         # swap names
-        p1_name = win.sb_p1_name.edit.text()
-        p2_name = win.sb_p2_name.edit.text()
-        win.sb_p1_name.edit.setText(p2_name)
-        win.sb_p2_name.edit.setText(p1_name)
+        p1_name = win.widgets["p1.name"].edit.text()
+        p2_name = win.widgets["p2.name"].edit.text()
+        win.widgets["p1.name"].edit.setText(p2_name)
+        win.widgets["p2.name"].edit.setText(p1_name)
 
         # swap characters
-        p1_char = win.sb_p1_char.edit.currentIndex()
-        p2_char = win.sb_p2_char.edit.currentIndex()
-        win.sb_p1_char.edit.setCurrentIndex(p2_char)
-        win.sb_p2_char.edit.setCurrentIndex(p1_char)
+        p1_char = win.widgets["p1.character"].edit.currentIndex()
+        p2_char = win.widgets["p2.character"].edit.currentIndex()
+        win.widgets["p1.character"].edit.setCurrentIndex(p2_char)
+        win.widgets["p2.character"].edit.setCurrentIndex(p1_char)
 
         # swap wins
-        p1_wins = [btn.isChecked() for btn in win.sb_p1_wins.btns]
-        p2_wins = [btn.isChecked() for btn in win.sb_p2_wins.btns]
-        [win.sb_p1_wins.btns[i].setChecked(p2_wins[i]) for i in range(len(p1_wins))]
-        [win.sb_p2_wins.btns[i].setChecked(p1_wins[i]) for i in range(len(p2_wins))]
-
+        p1_wins = [btn.isChecked() for btn in win.widgets["p1.wins"].btns]
+        p2_wins = [btn.isChecked() for btn in win.widgets["p2.wins"].btns]
+        [
+            win.widgets["p1.wins"].btns[i].setChecked(p2_wins[i])
+            for i in range(len(p1_wins))
+        ]
+        [
+            win.widgets["p2.wins"].btns[i].setChecked(p1_wins[i])
+            for i in range(len(p2_wins))
+        ]

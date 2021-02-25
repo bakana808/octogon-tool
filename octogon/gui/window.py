@@ -5,23 +5,13 @@ from typing import TYPE_CHECKING
 # from server import start_server, create_server
 from octogon.utils.data import NestedDict
 from octogon.utils.logger import get_print_fn
-from octogon.utils.lookup import characters
-from octogon.gui.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget, SBPortWidget
 from octogon.gui.listener import WindowListener
+from octogon.gui.layout import create_layout
+from octogon.gui.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget, SBPortWidget
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QAction,
-    qApp,
-    QLabel,
-    QGridLayout,
-    QLineEdit,
-    QWidget,
-    QPushButton,
-)
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
 
 if TYPE_CHECKING:
     from octogon import Octogon
@@ -40,91 +30,11 @@ class OctogonWidget(QMainWindow):
         super().__init__()
 
         self.octogon = octogon
-        self.widgets = NestedDict({})
+        self.widgets = NestedDict({}, True)
         self.listener = WindowListener(self)
+        self.widget = create_layout(self)
 
         # layout
-        wid = QWidget(self)
-        self.setCentralWidget(wid)
-
-        # player names
-        self.sb_p1_name = SBTextWidget(self, "P1 Name", key="p1.name")
-        self.sb_p2_name = SBTextWidget(self, "P2 Name", key="p2.name")
-
-        # characters chosen
-        character_names = list(characters.values())
-
-        self.sb_p1_char = SBDropdownWidget(
-            self, "Character", key="p1.character", items=character_names
-        )
-
-        self.sb_p2_char = SBDropdownWidget(
-            self, "Character", key="p2.character", items=character_names
-        )
-
-        # number of wins per player
-        # self.sb_p1_wins = QButtonGroup(self)
-        self.sb_p1_wins = SBWinsWidget(self, "Wins", "p1.wins")
-        self.sb_p2_wins = SBWinsWidget(self, "Wins", "p2.wins")
-
-        # controller port per player
-        self.sb_p1_port = SBPortWidget(self, "p1.port", 0)
-        self.sb_p2_port = SBPortWidget(self, "p2.port", 1)
-
-        # round title
-        self.sb_round_title = SBTextWidget(self, "Round Title", "round_title")
-
-        # best of 3/5
-        self.sb_round_games = SBDropdownWidget(
-            self, "Best of", "round_games", ["3", "5"]
-        )
-
-        self.sb_update_bt = QPushButton("Update")
-        self.sb_update_bt.setObjectName("update_btn")
-        self.sb_update_bt.clicked.connect(self.listener.update_scoreboard)
-
-        self.sb_bt_swap = QPushButton("Swap P1/P2")
-        self.sb_bt_swap.clicked.connect(self.listener.swap)
-
-        # sub-layout for scoreboard options
-        sb_group = QGridLayout(wid)
-        sb_group.setSpacing(12)
-
-        sb_group.addWidget(self.sb_p1_name.label, 0, 0, 1, 2)
-        sb_group.addWidget(self.sb_p1_name.edit, 0, 2, 1, 4)
-        for i, btn in enumerate(self.sb_p1_port.btns):
-            sb_group.addWidget(btn, 0, 6 + i)
-
-        sb_group.addWidget(self.sb_p2_name.label, 0, 10, 1, 2)
-        sb_group.addWidget(self.sb_p2_name.edit, 0, 12, 1, 4)
-        for i, btn in enumerate(self.sb_p2_port.btns):
-            sb_group.addWidget(btn, 0, 16 + i)
-
-        sb_group.addWidget(self.sb_p1_char.label, 1, 0, 1, 2)
-        sb_group.addWidget(self.sb_p1_char.edit, 1, 2, 1, 4)
-        sb_group.addWidget(self.sb_p2_char.label, 1, 10, 1, 2)
-        sb_group.addWidget(self.sb_p2_char.edit, 1, 12, 1, 4)
-
-        sb_group.addWidget(self.sb_p1_wins.label, 2, 0, 1, 2)
-        for i, btn in enumerate(self.sb_p1_wins.btns):
-            sb_group.addWidget(btn, 2, 2 + i)
-
-        sb_group.addWidget(self.sb_p2_wins.label, 2, 10, 1, 2)
-        for i, btn in enumerate(self.sb_p2_wins.btns):
-            sb_group.addWidget(btn, 2, 12 + i)
-
-        sb_group.addWidget(self.sb_round_title.label, 3, 0, 1, 2)
-        sb_group.addWidget(self.sb_round_title.edit, 3, 2, 1, 4)
-        sb_group.addWidget(self.sb_round_games.label, 3, 6, 1, 2)
-        sb_group.addWidget(self.sb_round_games.edit, 3, 8, 1, 2)
-        sb_group.addWidget(self.sb_bt_swap, 3, 10, 1, 10)
-
-        sb_group.addWidget(self.sb_update_bt, 4, 0, 1, 20)
-
-        # grid.addLayout(sb_group, 0, 0)
-
-        wid.setLayout(sb_group)
-
         # menubar
         # -------
         # action = QAction("&Exit", self)
@@ -172,3 +82,24 @@ class OctogonWidget(QMainWindow):
 
         finally:
             self.close()
+
+    def __set_widget(self, key, widget):
+        self.widgets[key] = widget
+        return widget
+
+    def _button(self, text, key) -> QPushButton:
+        btn = QPushButton(text)
+        btn.setObjectName(key)
+        return self.__set_widget(key, btn)
+
+    def sb_text(self, name, key) -> SBTextWidget:
+        return self.__set_widget(key, SBTextWidget(self, name, key))
+
+    def sb_dropdown(self, name, key, items) -> SBDropdownWidget:
+        return self.__set_widget(key, SBDropdownWidget(self, name, key, items))
+
+    def sb_wins(self, name, key) -> SBWinsWidget:
+        return self.__set_widget(key, SBWinsWidget(self, name, key))
+
+    def sb_port(self, key, port) -> SBPortWidget:
+        return self.__set_widget(key, SBPortWidget(self, key, port))

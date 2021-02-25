@@ -59,6 +59,9 @@ class NestedDict:
             if i == len(keys) - 1:  # last elm
                 ret[key] = v
             else:
+                # silently make a new dict if it doesn't exist
+                if key not in ret:
+                    ret[key] = {}
                 ret = ret[key]
 
         self.on_data_changed(k, v)
