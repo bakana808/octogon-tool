@@ -1,0 +1,161 @@
+
+/* stylesheet for the main Octogon window */
+
+ $fg: #DDDDDD;
+ $bg: #202020;
+
+ $textbox_fg: #eeeeee;
+ $textbox_bg: 0 #303030, 1 #383838;
+ $textbox_hover_bg: 0 #404040, 1 #454545;
+
+ $combobox_fg: #bbbbbb;
+ $combobox_bg: 1 #303030, 0 #383838;
+ $combobox_hover_bg: 1 #404040, 0 #484848;
+
+ $button_bg: 1 #303030, 0 #353535;
+ $button_hover_bg: 1 #404040, 0 #454545;
+ $button_pressed_bg: 1 #303030, 0 #353535;
+ $button_update_bg: 1 #696FE5, 0 #7D82E8;
+ $button_update_hover_bg: 1 #A1A5FF, 0 #7A80FD;
+ $button_update_pressed_bg: 0 #696FE5, 1 #7D82E8;
+
+ $checkbox_off_bg: 0 #151515, 1 #252525;
+ $checkbox_off_hover_bg: #252525;
+ $checkbox_on_bg: 0 #D9D9D9, 1 #BBBBBB;
+ $checkbox_on_hover_bg: #C6C6C6;
+ $checkbox_on_pressed_bg: #999999;
+
+ $checkbox_port0_on_bg: 0 #FFA1A1, 1 #FD7A7A;
+ $checkbox_port1_on_bg: 0 #A1A5FF, 1 #7A80FD;
+ $checkbox_port2_on_bg: 0 #FFE7A1, 1 #FDDC7A;
+ $checkbox_port3_on_bg: 0 #64d07C, 1 #76BA76;
+
+QWidget {
+	color: $fg;
+	background-color: $bg;
+}
+
+/* ========================================================================== */
+/* QLineEdits */
+/* ========================================================================== */
+
+QLineEdit {
+	border: none;
+	border-radius: 6px;
+	padding: 8px;
+	color: $textbox_fg;
+	background-color: qlineargradient(0, 0, 0, 1, $textbox_bg);
+}
+
+QLineEdit::hover {
+	background-color: qlineargradient(0, 0, 0, 1, $textbox_hover_bg);
+}
+
+/* ========================================================================== */
+/* QComboBoxes */
+/* ========================================================================== */
+
+QComboBox {
+	padding: 8px;
+	border-radius: 6px;
+	color: $combobox_fg;
+	background-color: qlineargradient(0, 0, 0, 1, $combobox_bg);
+}
+
+QComboBox::hover {
+	background-color: qlineargradient(0, 0, 0, 1, $combobox_hover_bg);
+}
+
+QComboBox::drop-down {
+	border: none;
+	color: white;
+}
+
+QComboBox::down-arrow {
+	color: white;
+}
+
+QComboBox QAbstractItemView {
+	border: none;
+	padding: 8px;
+	background-color: $bg;
+}
+
+/* ========================================================================== */
+/* QPushButtons */
+/* ========================================================================== */
+
+QPushButton {
+	border-radius: 8px;
+	padding: 8px;
+	background-color: qlineargradient(0, 0, 0, 1, $button_bg);
+}
+
+QPushButton::hover {
+	background-color: qlineargradient(0, 0, 0, 1, $button_hover_bg);
+}
+
+QPushButton::pressed {
+	background-color: qlineargradient(0, 0, 0, 1, $button_pressed_bg);
+}
+
+/* update button colors */
+QPushButton#update_btn {
+	background-color: qlineargradient(0, 0, 0, 1, $button_update_bg);
+}
+
+QPushButton::hover#update_btn {
+	background-color: qlineargradient(0, 0, 0, 1, $button_update_hover_bg);
+}
+
+QPushButton::pressed#update_btn {
+	background-color: qlineargradient(0, 0, 0, 1, $button_update_pressed_bg);
+}
+
+/* ========================================================================== */
+/* QCheckBoxes */
+/* ========================================================================== */
+
+QCheckBox::indicator {
+	border-radius: 12px;
+	width: 24px;
+	height: 24px;
+}
+
+QCheckBox::indicator:unchecked {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_off_bg);
+}
+
+QCheckBox::indicator:unchecked:hover {
+	background-color: $checkbox_off_hover_bg;
+}
+
+QCheckBox::indicator:checked {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_on_bg);
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: $checkbox_on_hover_bg;
+}
+
+QCheckBox::indicator:checked:pressed {
+	background-color: $checkbox_on_pressed_bg;
+}
+
+/* port colors */
+
+QCheckBox::indicator:checked#port1 {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_port0_on_bg);
+}
+
+QCheckBox::indicator:checked#port2 {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_port1_on_bg);
+}
+
+QCheckBox::indicator:checked#port3 {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_port2_on_bg);
+}
+
+QCheckBox::indicator:checked#port4 {
+	background-color: qlineargradient(0, 0, 1, 1, $checkbox_port3_on_bg);
+}

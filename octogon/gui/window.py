@@ -1,4 +1,5 @@
 import traceback
+import qtsass
 from typing import TYPE_CHECKING
 
 # from server import start_server, create_server
@@ -79,6 +80,7 @@ class OctogonWidget(QMainWindow):
         )
 
         self.sb_update_bt = QPushButton("Update")
+        self.sb_update_bt.setObjectName("update_btn")
         self.sb_update_bt.clicked.connect(self.listener.update_scoreboard)
 
         self.sb_bt_swap = QPushButton("Swap P1/P2")
@@ -145,9 +147,14 @@ class OctogonWidget(QMainWindow):
 
     def update_css(self):
         """Re-read the stylesheet for the window."""
-        with open("site/style/window.css", "r") as f:
+        # compile the scss file
+        qtsass.compile_filename(
+            "templates/qtsass/window.scss", "sites/style/window.css"
+        )
+
+        with open("sites/style/window.css", "r") as f:
             self.setStyleSheet(f.read())
-            print("updated window stylesheet")
+            # print("updated window stylesheet")
 
     def start(self):
         """Start the QT application. The process will loop on this function."""
