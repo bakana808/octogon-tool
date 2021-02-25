@@ -1,9 +1,7 @@
 import logging
-import sys
-from threading import Thread
 from typing import TYPE_CHECKING
 
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 
 from octogon.utils.logger import get_print_fn
@@ -32,23 +30,7 @@ class OctogonServer:
         router.add_routes(self)
 
     def start(self):
-        try:
-            self.app.run(debug=False, use_reloader=False, port=8000)
-        except RuntimeError:
-            sys.exit(0)
+        self.app.run(debug=False, use_reloader=False, port=8000)
 
-    def stop(self):
-        raise RuntimeError("Server shutting down")
-
-
-def start_server_process(octogon: "Octogon") -> Thread:
-    """Start the Flask server in a new Process."""
-
-    def _start_server():
-        server = OctogonServer(octogon)
-        server.start()
-
-    thread = Thread(target=_start_server, args=())
-    thread.daemon = True
-    thread.start()
-    return thread
+    # to stop this server, run it in a Process and call terminate()
+    # there is no way to stop it if it is running in a thread

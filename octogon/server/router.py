@@ -79,7 +79,7 @@ def add_routes(server: "OctogonServer"):
         flags = octogon.flags
         # print("is_modified: %s" % octogon.get_scoreboard_modified())
         if flags.get_scoreboard_modified():
-            print("modification detected")
+            # print("modification detected")
             flags.set_scoreboard_modified(False)
             return {"is_modified": True, "scoreboard": flags.get_scoreboard()}
         else:

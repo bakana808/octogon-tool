@@ -1,5 +1,4 @@
 import signal
-from threading import Thread
 from multiprocessing import Process
 from multiprocessing.managers import BaseManager
 
@@ -10,7 +9,6 @@ from octogon.api.smashgg import SmashAPI
 from octogon.daemon.scss import SCSSAutoCompiler
 from octogon.gui.window import OctogonWidget
 from octogon.renderer import Renderer
-from octogon.server import start_server_process
 from octogon.utils.logger import get_print_fn
 
 print = get_print_fn()
@@ -122,6 +120,5 @@ class Octogon:
         print("scss compiler has stopped.")
 
         # stop the Flask server
-        self.server_thread.terminate()
-        self.server_thread.join()
+        self.server_process.terminate()
         print("server has stopped.")
