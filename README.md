@@ -88,7 +88,7 @@ The most up-to-date list of sources can be found in [server.py](https://github.c
 ### 2. Controlling the Scoreboard
 
 When run, a window will open containing scoreboard controls.
-![Octogon Panel](https://i.imgur.com/uPlivUx.png)
+![Octogon Panel](https://i.imgur.com/PWW8eeJ.png)
 
 Edit the information on the window, then update the scoreboard overlay by clicking "Update".
 
