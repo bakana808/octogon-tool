@@ -1,5 +1,4 @@
 import signal
-import sys
 
 import octogon.config
 import octogon.scoreboard
@@ -26,6 +25,7 @@ class Octogon:
 
         # the scoreboard data object
         self.scoreboard = octogon.scoreboard.init_scoreboard(self)
+        self.is_scoreboard_modified = True
 
         # the smash.gg object to use for API integration
         self.api_smashgg = SmashAPI(self)
@@ -60,6 +60,18 @@ class Octogon:
 
     def close_window(self, *args):
         self.window.close()
+
+    def on_scoreboard_update(self):
+        """Called when the scoreboard file has changed."""
+        self.is_scoreboard_modified = True
+        print("scoreboard has been updated, flagged the scoreboard as not modified")
+
+    def get_scoreboard_modified(self):
+        return self.is_scoreboard_modified
+
+    def reset_scoreboard_flag(self):
+        self.is_scoreboard_modified = False
+        print("flagged the scoreboard as not modified")
 
     def on_compile(self, name: str, ext: str, outdir: str):
         """Called when a file has been compiled (usually .scss)."""

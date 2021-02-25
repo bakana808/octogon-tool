@@ -1,22 +1,75 @@
+/**
+ * Handles automatic updating of scoreboard elements.
+ */
+
 // Constants
-// =========
+// =============================================================================
 
 // how often should the scoreboard update?
-const update_interval = 2000;
+const update_interval = 1000;
 
 // path to the json containing scoreboard data
 const sb_path = "scoreboard.json";
 
+// =============================================================================
+
 // stores the last read scoreboard data, used to check for changes
-var sb_data = null;
+var scoreboard_cache = null;
+
+
+function http_post(url, data, mimetype = "application/json") {
+
+	if(typeof(data) === "object") { data = JSON.stringify(data); }
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader('Content-Type', mimetype);
+	xhr.send(data);
+}
+
+function http_get(url) {
+	return new Promise(resolve => {
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (this.readyState != 4) return;
+			if (this.status == 200) {
+				var data = JSON.parse(this.responseText);
+				resolve(data);
+			}
+		};
+		xhr.open("GET", url, true);
+		xhr.send();
+	});
+}
+
+/**
+ * POSTs a message to Octogon to print a message to the console.
+ *
+ * @param {string} msg the message to print
+ */
+function print(msg) {
+	http_post("http://localhost:8000/debug", { message: "JS: " + msg });
+}
+
+async function fetch_scoreboard() {
+	return await http_get("http://localhost:8000/scoreboard/data");
+}
 
 /**
  * Shortcut method to getting an element by ID in the HTML.
+ *
+ * @param {string} id ID of the element
  */
 function get_elm(id) {
 	return document.getElementById(id);
 }
 
+/**
+ * Gets the path to a character portrait from its name.
+ *
+ * @param {string} character the name of the character
+ * @return {string} the path to the character's portrait
+ */
 function get_portrait_path(character) {
 	if (character === "") {
 		return `/assets/portraits/Random CPU.png`;
@@ -36,34 +89,26 @@ class ScoreboardData {
 	 * Update the cached data with this one.
 	 */
 	update_cache() {
-		sb_data = this.json;
+		scoreboard_cache = this.json;
 	}
 
 	/**
-	 * Return true if this key is different between this data
-	 * and the last saved data.
+	 * Calls the callback function if the value at this key is
+	 * different than the value in the cached data.
 	 *
 	 * @param {string} key a period seperated list of json keys
 	 * @param {function} callback a callback function
 	 */
-	on_modified(key, callback) {
+	if_modified(key, callback) {
 		var keys = key.split(".");
 
-		// check if saved data is null
-		if (sb_data === null) {
-			var curr_obj = this.json;
-			keys.forEach((key) => (curr_obj = curr_obj[key]));
-			callback(curr_obj);
-			return;
-		}
-
-		// find element in current data and saved data
+		// find target value in current data and saved data
 		var curr_obj = this.json;
-		var last_obj = sb_data;
+		var last_obj = scoreboard_cache;
 
 		keys.forEach((key) => {
 			curr_obj = curr_obj[key];
-			last_obj = last_obj[key];
+			if(last_obj !== null) { last_obj = last_obj[key]; }
 		});
 
 		// then compare the two objects
@@ -84,11 +129,11 @@ class ScoreboardData {
  *
  * @return {Promise<ScoreboardData>} a promise that resolves with the object
  */
-async function fetch_sb_data() {
-	var res = await fetch(sb_path);
-	var json = await res.json();
-	return new ScoreboardData(json);
-}
+//async function fetch_scoreboard() {
+//    var res = await fetch(sb_path);
+//    var json = await res.json();
+//    return new ScoreboardData(json);
+//}
 
 /**
  * Updates the win count for the given player.
@@ -121,15 +166,20 @@ async function sb_update_wins(player, wins) {
 }
 
 /**
- * Updates the scoreboard.
+ * Checks if there is a change in the scoreboard data.
  */
-async function sb_update() {
-	console.log("fetching data...");
-	data = await fetch_sb_data();
+async function check_scoreboard_changes() {
+
+	data = await fetch_scoreboard();
+	//print(JSON.stringify(data));
+	if (scoreboard_cache !== null && data.is_modified === false) { return; }
+
+	scoreboard = new ScoreboardData(data.scoreboard);
+	//print("detected change in scoreboard");
 
 	// WIN COUNT
 
-	data.on_modified("round_games", (games) => {
+	scoreboard.if_modified("round_games", (games) => {
 		var num_icons = 2;
 		if (games == 5) {
 			num_icons = 3;
@@ -162,57 +212,75 @@ async function sb_update() {
 			p2_wincounter.appendChild(win_elm);
 		}
 
-		sb_update_wins(0, data.json["p1"]["wins"]);
-		sb_update_wins(0, data.json["p2"]["wins"]);
+		sb_update_wins(0, scoreboard.json["p1"]["wins"]);
+		sb_update_wins(1, scoreboard.json["p2"]["wins"]);
 	});
 
 	// WIN COUNTER
 
-	data.on_modified("p1.wins", (wins) => {
+	scoreboard.if_modified("p1.wins", (wins) => {
 		sb_update_wins(0, wins);
 	});
 
-	data.on_modified("p2.wins", (wins) => {
+	scoreboard.if_modified("p2.wins", (wins) => {
 		sb_update_wins(1, wins);
 	});
 
 	// PLAYER NAME
 
-	data.on_modified("p1.name", (name) => {
-		console.log("updating p1 name");
+	scoreboard.if_modified("p1.name", (name) => {
+		//console.log("updating p1 name");
 		get_elm("p1_name").textContent = name;
 	});
 
-	data.on_modified("p2.name", (name) => {
-		console.log("updating p2 name");
+	scoreboard.if_modified("p2.name", (name) => {
+		//console.log("updating p2 name");
 		get_elm("p2_name").textContent = name;
 	});
 
 	// PLAYER CHARACTER PORTRAIT
 
-	data.on_modified("p1.character", (character) => {
+	scoreboard.if_modified("p1.character", (character) => {
 		var path = get_portrait_path(character);
 		get_elm("p1_portrait").style.backgroundImage = `url("${path}")`;
 	});
 
-	data.on_modified("p2.character", (character) => {
+	scoreboard.if_modified("p2.character", (character) => {
 		var path = get_portrait_path(character);
 		get_elm("p2_portrait").style.backgroundImage = `url("${path}")`;
 	});
 
-	data.on_modified("round_title", (title) => {
+	// PLAYER CONTROLLER PORT
+	
+	scoreboard.if_modified("p1.port", (port) => {
+		elm = get_elm("p1_name")
+		elm.classList.remove("port_0", "port_1", "port_2", "port_3");
+		elm.classList.add(`port_${port}`);
+	});
+
+	scoreboard.if_modified("p2.port", (port) => {
+		elm = get_elm("p2_name")
+		elm.classList.remove("port_0", "port_1", "port_2", "port_3");
+		elm.classList.add(`port_${port}`);
+	});
+
+	// ROUND TITLE
+
+	scoreboard.if_modified("round_title", (title) => {
 		get_elm("sb_roundtitle").textContent = title;
 	});
 
-	data.on_modified("round_games", (games) => {
+	// ROUND NUM OF GAMES
+
+	scoreboard.if_modified("round_games", (games) => {
 		get_elm("sb_roundtype").textContent = `Best of ${games}`;
 	});
 
-	data.update_cache();
+	scoreboard.update_cache();
 }
 
 // the main function
 
 window.onload = () => {
-	setInterval(() => sb_update(), 1000);
+	setInterval(() => check_scoreboard_changes(), update_interval);
 };

@@ -68,7 +68,7 @@ class OctogonWidget(QMainWindow):
 
         # controller port per player
         self.sb_p1_port = SBPortWidget(self, "p1.port", 0)
-        self.sb_p2_port = SBPortWidget(self, "p1.port", 1)
+        self.sb_p2_port = SBPortWidget(self, "p2.port", 1)
 
         # round title
         self.sb_round_title = SBTextWidget(self, "Round Title", "round_title")

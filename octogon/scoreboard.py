@@ -63,10 +63,12 @@ class ScoreboardData(NestedDict):
 
         with open(config.SB_DATA_PATH, "w") as f:
             json.dump(self.dictionary, f, ensure_ascii=False, indent=4)
-            print("committed scoreboard changes")
+
+        self.octogon.on_scoreboard_update()
 
     def on_data_changed(self, k, v):
-        print("scoreboard has been updated")
+        # print("scoreboard has been updated")
+        pass
 
 
 def init_scoreboard(octogon):

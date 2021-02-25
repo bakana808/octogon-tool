@@ -2,21 +2,27 @@ import os
 import pathlib
 import typing
 
-from flask import send_from_directory
+from flask import send_from_directory, request
+from flask_cors import cross_origin
 
 from octogon.api.spotify import spotify_get_artist, spotify_get_song
 from octogon.utils.tag import div, span
+from octogon.utils.logger import get_print_fn
 
 if typing.TYPE_CHECKING:
+    from octogon import Octogon
     from octogon.server import OctogonServer
+
+print = get_print_fn("flask")
 
 
 def add_routes(server: "OctogonServer"):
     """Adds all routes to this Flask application."""
 
     app = server.app
-    renderer = server.octogon.renderer
-    config = server.octogon.config
+    octogon: "Octogon" = server.octogon
+    renderer = octogon.renderer
+    config = octogon.config
 
     @app.route("/<path:path>", methods=["GET"])
     def _get_file(path):
@@ -43,12 +49,40 @@ def add_routes(server: "OctogonServer"):
         # send the requested file from the directory
         return send_from_directory(directory, path, cache_timeout=0)
 
+    @app.route("/")
+    @cross_origin
+    def _index():
+        return ""
+
+    @app.route("/debug", methods=["POST"])
+    def _debug():
+        """
+        Debug route for external scripts to communicate with this program.
+        """
+        data = request.get_json()
+
+        # print messages from the data
+        if "message" in data:
+            print(data["message"])
+
+        return {"success": True}
+
     # Scoreboard Routes
     # -----------------
 
     @app.route("/scoreboard")
     def _scoreboard():
         return renderer.render_scoreboard()
+
+    @app.route("/scoreboard/data")
+    def _scoreboard_data():
+        nonlocal octogon
+        # print("is_modified: %s" % octogon.get_scoreboard_modified())
+        if octogon.get_scoreboard_modified():
+            octogon.reset_scoreboard_flag()
+            return {"is_modified": True, "scoreboard": octogon.scoreboard.dictionary}
+        else:
+            return {"is_modified": False, "scoreboard": octogon.scoreboard.dictionary}
 
     @app.route("/background")
     def _background():

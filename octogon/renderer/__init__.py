@@ -42,6 +42,7 @@ class Renderer:
 
         print("loading HTML templates...")
 
+        self.octogon = octogon
         config = octogon.config
         path = config.TEMPLATE_PATH
         self.env = Environment(loader=FileSystemLoader(path))
@@ -274,7 +275,9 @@ class Renderer:
         return self.render("bracket", auto_refresh=auto_refresh, body=str(elm))
 
     def render_scoreboard(self) -> str:
-        return self.render("scoreboard")
+        p1_port = "port_%s" % self.octogon.scoreboard["p1.port"]
+        p2_port = "port_%s" % self.octogon.scoreboard["p2.port"]
+        return self.render("scoreboard", p1_port=p1_port, p2_port=p2_port)
 
     def render_background(self) -> str:
         bg_path = "assets/bgs/1.png"

@@ -1,5 +1,10 @@
 @import "variables.scss";
 
+$color_port_1: #c45d5d;
+$color_port_2: #446fa7;
+$color_port_3: #A8B048;
+$color_port_4: #49B46D;
+
 //======================================================================================
 // SCOREBOARD
 //======================================================================================
@@ -146,18 +151,30 @@ $sb_windot_radius: 30px;
 	height: 40px;
 	line-height: 36px;
 
-	&#p1_name {
-		border-bottom: solid;
-		border-color: #c45d5d;
-		color: #c45d5d;
-		border-width: $sb_border_width;
+	border-bottom: solid;
+	border-width: $sb_border_width;
+
+	// color selection per controller port
+	// -----------------------------------
+
+	&.port_0 {
+		border-color: $color_port_1;
+		color: $color_port_1;
 	}
 
-	&#p2_name {
-		border-bottom: solid;
-		border-color: #446fa7;
-		color: #446fa7;
-		border-width: $sb_border_width;
+	&.port_1 {
+		border-color: $color_port_2;
+		color: $color_port_2;
+	}
+
+	&.port_2 {
+		border-color: $color_port_3;
+		color: $color_port_3;
+	}
+
+	&.port_3 {
+		border-color: $color_port_4;
+		color: $color_port_4;
 	}
 }
 
