@@ -2,7 +2,9 @@
 /* stylesheet for the main Octogon window */
 
  $fg: #DDDDDD;
- $bg: #202020;
+ $bg: #252525;
+
+ $title_fg: #BEBEBE;
 
  $textbox_fg: #eeeeee;
  $textbox_bg: 0 #303030, 1 #383838;
@@ -19,6 +21,9 @@
  $button_update_hover_bg: 1 #A1A5FF, 0 #7A80FD;
  $button_update_pressed_bg: 0 #696FE5, 1 #7D82E8;
 
+ $button_exit_bg: #C42828;
+ $button_exit_hover_bg: #DC5454;
+
  $checkbox_off_bg: 0 #151515, 1 #252525;
  $checkbox_off_hover_bg: #252525;
  $checkbox_on_bg: 0 #D9D9D9, 1 #BBBBBB;
@@ -30,9 +35,25 @@
  $checkbox_port2_on_bg: 0 #FFE7A1, 1 #FDDC7A;
  $checkbox_port3_on_bg: 0 #64d07C, 1 #76BA76;
 
+* {
+	//border: 2px solid red;
+}
+
 QWidget {
 	color: $fg;
 	background-color: $bg;
+}
+
+#title_layout {
+	background-color: #202020;
+}
+
+QLabel#title {
+	color: $title_fg;
+	padding-left: 4px;
+	padding-top: 4px;
+	font-size: 11pt;
+	background: none;
 }
 
 /* ========================================================================== */
@@ -110,6 +131,14 @@ QPushButton::hover#update_btn {
 
 QPushButton::pressed#update_btn {
 	background-color: qlineargradient(0, 0, 0, 1, $button_update_pressed_bg);
+}
+
+QPushButton#exit_btn {
+	border-radius: 12px;
+
+	background: $button_exit_bg;
+	&::hover {background: $button_exit_hover_bg;}
+	&::pressed {background: $button_exit_bg;}
 }
 
 /* ========================================================================== */

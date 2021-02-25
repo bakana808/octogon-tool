@@ -9,7 +9,7 @@ from octogon.gui.listener import WindowListener
 from octogon.gui.layout import create_layout
 from octogon.gui.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget, SBPortWidget
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QPoint
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
 
@@ -34,7 +34,6 @@ class OctogonWidget(QMainWindow):
         self.listener = WindowListener(self)
         self.widget = create_layout(self)
 
-        # layout
         # menubar
         # -------
         # action = QAction("&Exit", self)
@@ -45,15 +44,28 @@ class OctogonWidget(QMainWindow):
         # fileMenu = menubar.addMenu("&File")
         # fileMenu.addAction(action)
 
-        self.update_css()
+        # configure the window
+        self.setWindowTitle("Octogon")
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setFixedSize(*WINDOW_SIZE)
         self.setGeometry(300, 300, *WINDOW_SIZE)
-        self.setWindowTitle("Octogon")
+        self.update_css()
+
+        self.old_pos = self.pos()
+
         self.show()
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_C:
             self.close()
+
+    def mousePressEvent(self, event):
+        self.old_pos = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        delta = QPoint(event.globalPos() - self.old_pos)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.old_pos = event.globalPos()
 
     def update_css(self):
         """Re-read the stylesheet for the window."""
