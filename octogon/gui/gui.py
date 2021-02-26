@@ -94,6 +94,14 @@ class SBWinsWidget(SBWidgetPair):
             QCheckBox(""),
             QCheckBox(""),
         ]
+
+        if self.scoreboard[self.key] >= 1:
+            self.btns[0].setChecked(True)
+        if self.scoreboard[self.key] >= 2:
+            self.btns[1].setChecked(True)
+        if self.scoreboard[self.key] >= 3:
+            self.btns[2].setChecked(True)
+
         for btn in self.btns:
             btn.toggled.connect(self.on_edited)
 
