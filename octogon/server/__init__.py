@@ -1,5 +1,6 @@
 import logging
 from typing import TYPE_CHECKING
+from multiprocessing import Process
 
 from flask import Flask
 from flask_cors import CORS
@@ -34,3 +35,21 @@ class OctogonServer:
 
     # to stop this server, run it in a Process and call terminate()
     # there is no way to stop it if it is running in a thread
+
+
+class OctogonServerProcess:
+    def __init__(self, octogon: "Octogon"):
+
+        self.octogon = octogon
+        self.server = OctogonServer(octogon)
+
+        self.process = Process(target=self.server.start)
+        self.process.daemon = True
+
+    def start(self):
+        self.process.start()
+
+    def stop(self):
+        self.process.terminate()
+        self.process.join()
+        self.process.close()

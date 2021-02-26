@@ -21,7 +21,7 @@ WINDOW_SIZE = (750, 0)
 print = get_print_fn("qt")
 
 
-class OctogonWidget(QMainWindow):
+class OctogonWindow(QMainWindow):
     def __init__(self, octogon: "Octogon"):
         # configure QT window
         self.app = QApplication([])

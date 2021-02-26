@@ -31,6 +31,7 @@ class SCSSAutoCompiler(FileSystemEventHandler):
 
     def stop(self):
         self.observer.stop()
+        self.observer.join()
 
     def on_modified(self, event: FileModifiedEvent):
         path = event.src_path

@@ -4,10 +4,10 @@ from multiprocessing.managers import BaseManager
 
 import octogon.config
 import octogon.scoreboard
-from octogon.server import OctogonServer
+from octogon.server import OctogonServerProcess
 from octogon.api.smashgg import SmashAPI
 from octogon.daemon.scss import SCSSAutoCompiler
-from octogon.gui.window import OctogonWidget
+from octogon.gui.window import OctogonWindow
 from octogon.renderer import Renderer
 from octogon.utils.logger import get_print_fn
 
@@ -55,7 +55,7 @@ class Octogon:
         self.renderer = Renderer(self)
 
         # the QT window
-        self.window = OctogonWidget(self)
+        self.window = OctogonWindow(self)
 
         # start the SCSS watcher
         # watcher_thread = threading.Thread(target=observer.start)
@@ -74,9 +74,8 @@ class Octogon:
         self.flags.set_scoreboard(self.scoreboard.dictionary)
 
         # start the Flask server
-        self.server = OctogonServer(self)
-        self.server_process = self.create_server_process()
-        self.server_process.start()
+        self.server = OctogonServerProcess(self)
+        self.server.start()
 
         # print config
         print("currently using these ids for data queries:")
@@ -113,11 +112,8 @@ class Octogon:
 
         # stop the SCSS watcher
         self.scss_watcher.stop()
-        # watcher_thread.join()
         print("scss compiler has stopped.")
 
         # stop the Flask server
-        self.server_process.terminate()
-        self.server_process.join()
-        self.server_process.close()
+        self.server.stop()
         print("server has stopped.")
