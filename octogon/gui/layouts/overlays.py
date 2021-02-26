@@ -13,7 +13,7 @@ class OverlaysLayout(QGridLayout):
     """The QT layout that displays a list of overlays to copy."""
 
     def __init__(self, window: "OctogonWindow"):
-        super().__init__(window)
+        super().__init__()
 
         self.setContentsMargins(QMargins(20, 20, 20, 20))
         self.setSpacing(10)

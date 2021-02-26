@@ -26,7 +26,7 @@ def create_layout(window: "OctogonWindow") -> QWidget:
     widget = QWidget(window)
     window.setCentralWidget(widget)
 
-    layout = QGridLayout(window)
+    layout = QGridLayout()
     layout.setSpacing(0)
     layout.setContentsMargins(QMargins(0, 0, 0, 0))
 

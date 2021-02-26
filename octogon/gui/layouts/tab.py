@@ -22,7 +22,7 @@ class TabLayout(QGridLayout):
     """The QT layout that displays tabs."""
 
     def __init__(self, window: "OctogonWindow"):
-        super().__init__(window)
+        super().__init__()
 
         self.setContentsMargins(QMargins(0, 0, 0, 0))
         self.setSpacing(0)
