@@ -14,14 +14,14 @@ from PyQt5.QtCore import QMargins
 
 import typing
 from octogon.gui.gui import SBTextWidget, SBDropdownWidget, SBWinsWidget, SBPortWidget
-from octogon.utils.lookup import characters
+from octogon.gui.layouts.tab import TabLayout
 from octogon.gui.layouts.scoreboard import ScoreboardLayout
 
 if typing.TYPE_CHECKING:
-    from octogon.gui.window import OctogonWidget
+    from octogon.gui.window import OctogonWindow
 
 
-def create_layout(window: "OctogonWidget") -> QWidget:
+def create_layout(window: "OctogonWindow") -> QWidget:
 
     widget = QWidget(window)
     window.setCentralWidget(widget)
@@ -46,7 +46,7 @@ def create_layout(window: "OctogonWidget") -> QWidget:
 
     sb_exit = QPushButton("✖")
     sb_exit.setObjectName("exit_btn")
-    sb_exit.setFixedSize(24, 24)
+    sb_exit.setFixedSize(20, 20)
     sb_exit.clicked.connect(window.close)
 
     title_layout.addWidget(sb_title, 0, 0)
@@ -55,9 +55,9 @@ def create_layout(window: "OctogonWidget") -> QWidget:
     # scoreboard controls
     # -------------------------------------------------
 
-    scoreboard_layout = ScoreboardLayout(window)
+    body_layout = TabLayout(window)
 
     layout.addWidget(title_widget, 0, 0)
-    layout.addLayout(scoreboard_layout, 1, 0)
+    layout.addLayout(body_layout, 1, 0)
 
     return widget

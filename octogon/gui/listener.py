@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from threading import Timer
 
 if TYPE_CHECKING:
-    from octogon.gui.window import OctogonWidget
+    from octogon.gui.window import OctogonWindow
 
 
 class WindowListener:
@@ -11,7 +11,7 @@ class WindowListener:
     to the main window.
     """
 
-    def __init__(self, window: "OctogonWidget"):
+    def __init__(self, window: "OctogonWindow"):
         self.window = window
 
     def update_scoreboard(self):

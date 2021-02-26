@@ -1,21 +1,21 @@
-from PyQt5.QtWidgets import QGridLayout, QComboBox
-from PyQt5.QtCore import QMargins
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtCore import QMargins, Qt
 
 import typing
-from octogon.utils.lookup import characters
 from octogon.gui.gui import SBCharacterWidget
 
 if typing.TYPE_CHECKING:
-    from octogon.gui.window import OctogonWidget
+    from octogon.gui.window import OctogonWindow
 
 
 class ScoreboardLayout(QGridLayout):
     """The QT layout that displays the scoreboard controls."""
 
-    def __init__(self, window: "OctogonWidget"):
+    def __init__(self, window: "OctogonWindow"):
         super().__init__(window)
 
         self.setContentsMargins(QMargins(20, 20, 20, 20))
+        self.setAlignment(Qt.AlignBottom)
         self.setSpacing(10)
 
         # player names
