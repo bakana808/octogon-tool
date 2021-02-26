@@ -42,9 +42,6 @@ class Octogon:
 
     def __init__(self):
 
-        # allows program to exit with CTRL+C
-        signal.signal(signal.SIGINT, self.close_window)
-
         # the user config
         self.config = octogon.config.load_config()
 
@@ -121,4 +118,6 @@ class Octogon:
 
         # stop the Flask server
         self.server_process.terminate()
+        self.server_process.join()
+        self.server_process.close()
         print("server has stopped.")

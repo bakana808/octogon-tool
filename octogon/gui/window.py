@@ -80,20 +80,17 @@ class OctogonWidget(QMainWindow):
 
     def start(self):
         """Start the QT application. The process will loop on this function."""
-        try:
-            timer = QTimer()
-            timer.start(500)
-            timer.timeout.connect(lambda: None)
-            self.app.exec_()
 
-        except KeyboardInterrupt:
-            pass
+        def catch_exit():
+            try:
+                pass
+            except KeyboardInterrupt:
+                self.close()
 
-        except Exception:
-            print(traceback.format_exc())
-
-        finally:
-            self.close()
+        timer = QTimer()
+        timer.start(500)
+        timer.timeout.connect(catch_exit)
+        self.app.exec_()
 
     def __set_widget(self, key, widget):
         self.widgets[key] = widget
