@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="style/style.css" />
+
+		{% if auto_refresh %}
+			<meta http-equiv="refresh" content="{{ auto_refresh }}" />
+		{% endif %}
+
+		{% if use_jquery %}
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		{% endif %}
+
+		{% if import_scripts %}
+			{% for s in import_scripts %}
+				<script src="{{ s }}"></script>
+			{% endfor %}
+		{% endif %}
+
+		{% block head %}
+		{% endblock %}
+	</head>
+	<body>
+		{% block body %}
+			{{ body }}
+		{% endblock %}
+	</body>
+</html>
+

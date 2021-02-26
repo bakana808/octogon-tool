@@ -51,10 +51,12 @@ class Renderer:
         files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
         for filepath in files:
-            name = os.path.splitext(os.path.basename(filepath))[0]
-            template = HTMLTemplate(filepath, self.env)
-            self.templates[name] = template
-            print(f"loaded template '{ name }' ({filepath})")
+            split = os.path.splitext(os.path.basename(filepath))
+            name = split[0]
+            if split[1] == ".j2" or split[1] == ".svg":
+                template = HTMLTemplate(filepath, self.env)
+                self.templates[name] = template
+                print(f"{filepath} \t=> '{ name }'")
 
         self.smashgg = octogon.api_smashgg
 
@@ -65,11 +67,7 @@ class Renderer:
         Render a template by its name.
         """
 
-        head = ""
-        if auto_refresh:
-            head = f'<meta http-equiv="refresh" content="{auto_refresh}" />'
-
-        return self.templates[template_name].render(head=head, **kwargs)
+        return self.templates[template_name].render(auto_refresh=auto_refresh, **kwargs)
 
     def render_countdown(self, tournament_slug: str) -> bytes:
 
@@ -277,12 +275,18 @@ class Renderer:
     def render_scoreboard(self) -> str:
         p1_port = "port_%s" % self.octogon.scoreboard["p1.port"]
         p2_port = "port_%s" % self.octogon.scoreboard["p2.port"]
-        return self.render("scoreboard", p1_port=p1_port, p2_port=p2_port)
+        return self.render(
+            "scoreboard",
+            import_scripts=["scripts/scoreboard_reader.js"],
+            p1_port=p1_port,
+            p2_port=p2_port,
+        )
 
     def render_background(self) -> str:
-        bg_path = "assets/bgs/1.png"
+        # bg_path = "assets/bgs/1.png"
+        bg_path = "assets/bgs/1.webm"
         self.generate_mask()
-        return self.render("background", bg_path=bg_path)
+        return self.render("background", video_path=bg_path)
 
     def generate_mask(self):
         """Render a mask and save it to file."""

@@ -1,0 +1,48 @@
+{#
+	Scoreboard Overlay
+	
+	If both bg_path and video_path are not set, this overlay
+	will be transparent.
+#}
+
+{% extends  "default.j2" %}
+
+{% block title %}octogon tool - scoreboard{% endblock %}
+
+{% if bg_path and video_path is not defined %}{% block head %}
+	<style>
+		#background {
+			background-image: url("{{ bg_path }}");
+			-webkit-mask-image: url("mask.svg");
+		}
+	</style>
+{% endblock %}{% endif %}
+
+{% block body %}
+	{% if bg_path %}
+		<div id="background">
+			{% if video_path %}
+			<video autoplay loop src="{{ video_path }}"></video>
+			{% endif %}
+		</div>
+	{% endif %}
+	<div id="p1_container" class="sb_container">
+		<div id="p1_name" class="sb_name {{p1_port}}"></div>
+		<div id="p1_portrait" class="sb_portrait"></div>
+		<div id="p1_wincounter" class="sb_wincounter"></div>
+	</div>
+	<div id="p2_container" class="sb_container">
+		<div id="p2_name" class="sb_name {{p2_port}}"></div>
+		<div id="p2_portrait" class="sb_portrait"></div>
+		<div id="p2_wincounter" class="sb_wincounter"></div>
+	</div>
+	<!--<div id="border_l" class="border"></div>-->
+	<!--<div id="border_r" class="border"></div>-->
+	<div id="border_full">
+		<div class="sb_title">
+			<div id="sb_roundtitle"></div>
+			<div id="sb_roundtype"></div>
+		</div>
+	</div>
+{% endblock %}
+

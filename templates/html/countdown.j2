@@ -1,0 +1,32 @@
+
+{% set import_scripts = ["https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"] %}
+{% set use_jquery = true %}
+{% extends "default.j2" %}
+
+{% block title %}octogon tool - countdown {% endblock %}
+
+{% block head %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		setInterval(function() {
+			var start = moment.unix({{ timestamp }}).utcOffset("-10");
+			var end = moment();
+
+			var h = start.diff(end, "hours");
+			// shortcut method to format number to double digits
+			var m = ("0" + (start.diff(end, "minutes") % 60)).slice(-2);
+			var s = ("0" + (start.diff(end, "seconds") % 60)).slice(-2);
+
+			// set text of .countdown elm
+			$(".countdown").html(h + ":" + m + ":" + s);
+		}, 1000);
+	});
+</script>
+{% endblock %}
+
+{% block body %}
+	<div class="wrapper">
+		<div class="countdown-caption">The tournament will start in</div>
+		<div class="countdown"></div>
+	</div>
+{% endblock %}

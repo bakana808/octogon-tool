@@ -1,0 +1,27 @@
+{#
+	Background Overlay
+
+	Supports either images or videos.
+	If video_path is set, bg_path will be ignored.
+#}
+
+{% extends "default.j2" %}
+
+{% block title %}octogon tool - background{% endblock %}
+
+{% if bg_path and video_path is not defined %}{% block head %}
+	<style>
+		#background {
+			background-image: url("{{ bg_path }}");
+			-webkit-mask-image: url("mask.svg");
+		}
+	</style>
+{% endblock %}{% endif %}
+
+{% block body %}
+	<div id="background">
+		{% if video_path %}
+		<video autoplay loop src="{{ video_path }}"></video>
+		{% endif %}
+	</div>
+{% endblock %}
